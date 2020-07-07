@@ -48,9 +48,13 @@ app.use(methodOverride('_method'));// allow POST, PUT and DELETE from a form
 // Routes
 //___________________
 //localhost:3000
-app.get('/' , (req, res) => {
-  res.send('Hello World!');
-});
+// app.get('/' , (req, res) => {
+//   res.send('Hello World!');
+// });
+
+//separate all routes into a separate file and use that
+const routeController = require('./controllers/router.js');
+app.use(routeController);
 
 //___________________
 //Listener
