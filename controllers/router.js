@@ -17,8 +17,8 @@ router.get('/login', (req, res) => {
     let url = `https://www.strava.com/oauth/authorize?client_id=${CLIENT_ID}&response_type=code&redirect_uri=${redirect}&approval_prompt=auto&scope=${scope}`
 
     console.log('current url: ', req._parsedUrl);
-    console.log('current req: ', req);
-    res.send(req._parsedUrl)
+    console.log('current req: ', req.get('host'));
+    res.send(req.get('host'))
     // res.redirect(url);
 });
 
