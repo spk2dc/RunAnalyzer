@@ -15,7 +15,11 @@ router.get('/login', (req, res) => {
     let scope = 'read_all,profile:read_all,activity:read_all'
     let redirect = 'http://localhost:3000/exchange_token'
     let url = `https://www.strava.com/oauth/authorize?client_id=${CLIENT_ID}&response_type=code&redirect_uri=${redirect}&approval_prompt=auto&scope=${scope}`
-    res.redirect(url);
+
+    console.log('current url: ', req._parsedUrl);
+    console.log('current req: ', req);
+    res.send(req._parsedUrl)
+    // res.redirect(url);
 });
 
 //page redirected to after login page
@@ -23,21 +27,21 @@ router.get('/exchange_token', (req, res) => {
     // console.log('req: ', req.query);
 
     if (req.query.hasOwnProperty('code')) {
-        let exchangeData = []
-        exchangeData[0] = tokenAuthentication(req.query.code)
+        let exchangePromise = tokenAuthentication(req.query.code)
+        // console.log('exchangePromise: ', exchangePromise);
 
-        Promise.allSettled(exchangeData).then((data) => {
-            console.log('promise: ', exchangeData);
-            console.log('data: ', data);
-            res.send(data);
+        exchangePromise.then((promiseData) => {
+            // console.log('exchangePromise: ', promiseData.data);
+            res.send(promiseData.data)
         })
+
+
     }
 });
 
 //upon successful login, request valid token from Strava API
 let tokenAuthentication = (code) => {
-
-    // Send a POST request using Axios
+    // Send a POST request using Axios and return the promise
     return axios({
         method: 'post',
         url: 'https://www.strava.com/oauth/token',
@@ -47,11 +51,7 @@ let tokenAuthentication = (code) => {
             code: code,
             grant_type: 'authorization_code'
         }
-    }).then((data) => {
-        console.log('tokenAuthentication: ',data);
-    });
-
-
+    })
 }
 
 module.exports = router;
