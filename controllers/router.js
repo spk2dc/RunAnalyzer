@@ -13,13 +13,11 @@ router.get('/', (req, res) => {
 //prompt user to login
 router.get('/login', (req, res) => {
     let scope = 'read_all,profile:read_all,activity:read_all'
-    let redirect = 'http://localhost:3000/exchange_token'
+    let redirect = `http://${req.get('host')}/exchange_token`
     let url = `https://www.strava.com/oauth/authorize?client_id=${CLIENT_ID}&response_type=code&redirect_uri=${redirect}&approval_prompt=auto&scope=${scope}`
 
-    console.log('current url: ', req._parsedUrl);
-    console.log('current req: ', req.get('host'));
-    res.send(req.get('host'))
-    // res.redirect(url);
+    console.log('current url: ', `${req.get('host')}${req.originalUrl}`)
+    res.redirect(url);
 });
 
 //page redirected to after login page
