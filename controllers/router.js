@@ -53,3 +53,19 @@ let tokenAuthentication = (code) => {
 }
 
 module.exports = router;
+
+
+/*
+SOURCES: 
+
+https://developers.strava.com/docs/getting-started/
+
+https://developers.strava.com/docs/authentication/
+
+http://developers.strava.com/docs/reference/
+
+https://developers.strava.com/playground/
+
+https://stackoverflow.com/questions/10183291/how-to-get-the-full-url-in-express
+
+*/
