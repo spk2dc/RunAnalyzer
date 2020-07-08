@@ -45,7 +45,7 @@ router.get('/exchange_token', (req, res) => {
                 
             })
         }).catch((err)=>{
-            console.log('login promise error');
+            console.log('login promise error', err);
             
         })
 
