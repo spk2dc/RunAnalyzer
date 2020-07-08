@@ -28,9 +28,17 @@ router.get('/exchange_token', (req, res) => {
         let exchangePromise = tokenAuthentication(req.query.code)
         // console.log('exchangePromise: ', exchangePromise);
 
+        //when promise is complete then get authenticated token from the returned data
         exchangePromise.then((promiseData) => {
             // console.log('exchangePromise: ', promiseData.data);
-            res.send(promiseData.data)
+
+            let access_token = promiseData.data.access_token
+            let token_type = promiseData.data.token_type
+            let refresh_token = promiseData.data.refresh_token
+
+            res.render('user_profile.ejs', { user: promiseData.data.athlete })
+
+            getAllActivities(token_type, access_token)
         })
 
 
@@ -52,11 +60,32 @@ let tokenAuthentication = (code) => {
     })
 }
 
+//get all the user's activities
+let getAllActivities = (token_type, access_token) => {
+    // Send a POST request using Axios and return the promise
+    return axios({
+        method: 'get',
+        url: 'https://www.strava.com/api/v3/athlete/activities',
+        data: {
+            before: '',
+            after: '',
+            page: 1,
+            per_page: 30
+        },
+        headers: {
+            Authorization: `${token_type} ${access_token}`
+        }
+    }).then((data) => {
+        console.log(data);
+
+    })
+}
+
 module.exports = router;
 
 
 /*
-SOURCES: 
+SOURCES:
 
 https://developers.strava.com/docs/getting-started/
 
@@ -67,5 +96,9 @@ http://developers.strava.com/docs/reference/
 https://developers.strava.com/playground/
 
 https://stackoverflow.com/questions/10183291/how-to-get-the-full-url-in-express
+
+https://stackoverflow.com/questions/19485353/function-to-convert-timestamp-to-human-date-in-javascript/34900794
+
+https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date
 
 */
