@@ -36,9 +36,11 @@ router.get('/exchange_token', (req, res) => {
             let token_type = promiseData.data.token_type
             let refresh_token = promiseData.data.refresh_token
 
-            res.render('user_profile.ejs', { user: promiseData.data.athlete })
 
-            getAllActivities(token_type, access_token)
+            getAllActivities(token_type, access_token).then((activities) => {
+                res.render('user_profile.ejs', { user: promiseData.data.athlete, activities: activities.data })
+
+            })
         })
 
 
@@ -63,7 +65,7 @@ let tokenAuthentication = (code) => {
 //get all the user's activities
 let getAllActivities = (token_type, access_token) => {
     // console.log(`curl -X "GET" "https://www.strava.com/api/v3/athlete/activities?before=&after=&page=1&per_page=30" "Authorization: ${token_type} ${access_token}"`);
-    
+
 
     // Send a POST request using Axios and return the promise
     return axios({
@@ -77,9 +79,6 @@ let getAllActivities = (token_type, access_token) => {
             Authorization: `${token_type} ${access_token}`,
             Accept: 'application/json'
         }
-    }).then((data) => {
-        console.log(data.data);
-
     })
 }
 
