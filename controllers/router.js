@@ -40,7 +40,13 @@ router.get('/exchange_token', (req, res) => {
             getAllActivities(token_type, access_token).then((activities) => {
                 res.render('user_profile.ejs', { user: promiseData.data.athlete, activities: activities.data })
 
+            }).catch((err)=>{
+                console.log('activities promise error');
+                
             })
+        }).catch((err)=>{
+            console.log('login promise error');
+            
         })
 
 
