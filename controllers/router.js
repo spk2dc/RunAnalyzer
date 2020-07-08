@@ -1,10 +1,18 @@
 const express = require('express');
+const bodyParser = require('body-parser')
+const methodOverride = require('method-override')
 const router = express.Router();
 require('dotenv').config()
 const axios = require('axios').default;
 
 const CLIENT_ID = process.env.CLIENT_ID
 const CLIENT_SECRET = process.env.CLIENT_SECRET
+
+//database schema
+const stravaUsers = require('../models/stravaUsers.js')
+
+router.use(express.urlencoded({ extended: true }))
+router.use(methodOverride('_method'))
 
 router.get('/', (req, res) => {
     res.render('index.ejs');
