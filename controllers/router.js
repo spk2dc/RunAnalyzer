@@ -62,21 +62,23 @@ let tokenAuthentication = (code) => {
 
 //get all the user's activities
 let getAllActivities = (token_type, access_token) => {
+    // console.log(`curl -X "GET" "https://www.strava.com/api/v3/athlete/activities?before=&after=&page=1&per_page=30" "Authorization: ${token_type} ${access_token}"`);
+    
+
     // Send a POST request using Axios and return the promise
     return axios({
         method: 'get',
         url: 'https://www.strava.com/api/v3/athlete/activities',
         data: {
-            before: '',
-            after: '',
             page: 1,
             per_page: 30
         },
         headers: {
-            Authorization: `${token_type} ${access_token}`
+            Authorization: `${token_type} ${access_token}`,
+            Accept: 'application/json'
         }
     }).then((data) => {
-        console.log(data);
+        console.log(data.data);
 
     })
 }
