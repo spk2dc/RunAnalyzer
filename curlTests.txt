@@ -1,0 +1,19 @@
+****************GENERAL FORMAT****************
+
+//url to get temporary code
+
+http://www.strava.com/oauth/authorize?client_id=[REPLACE_WITH_YOUR_CLIENT_ID]&response_type=code&redirect_uri=http://localhost/exchange_token&approval_prompt=force&scope=read
+
+
+//exchange code for authorization token
+
+curl -X POST https://www.strava.com/oauth/token \
+	-F client_id=YOURCLIENTID \
+	-F client_secret=YOURCLIENTSECRET \
+	-F code=AUTHORIZATIONCODE \
+	-F grant_type=authorization_code
+
+
+//get all athelete's activities
+
+curl -X GET "https://www.strava.com/api/v3/athlete/activities?page=1&per_page=30" -H "accept: application/json" -H "Authorization: Bearer [[token]]"

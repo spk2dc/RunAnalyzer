@@ -7,7 +7,7 @@ const CLIENT_ID = process.env.CLIENT_ID
 const CLIENT_SECRET = process.env.CLIENT_SECRET
 
 router.get('/', (req, res) => {
-    res.send('homepage');
+    res.render('index.ejs');
 });
 
 //prompt user to login
@@ -17,6 +17,8 @@ router.get('/login', (req, res) => {
     let url = `https://www.strava.com/oauth/authorize?client_id=${CLIENT_ID}&response_type=code&redirect_uri=${redirect}&approval_prompt=auto&scope=${scope}`
 
     console.log('current url: ', `${req.get('host')}${req.originalUrl}`)
+    console.log('login url: ', url);
+
     res.redirect(url);
 });
 
@@ -40,13 +42,13 @@ router.get('/exchange_token', (req, res) => {
             getAllActivities(token_type, access_token).then((activities) => {
                 res.render('user_profile.ejs', { user: promiseData.data.athlete, activities: activities.data })
 
-            }).catch((err)=>{
+            }).catch((err) => {
                 console.log('activities promise error');
-                
+
             })
-        }).catch((err)=>{
+        }).catch((err) => {
             console.log('login promise error', err);
-            
+
         })
 
 
@@ -55,6 +57,8 @@ router.get('/exchange_token', (req, res) => {
 
 //upon successful login, request valid token from Strava API
 let tokenAuthentication = (code) => {
+    console.log(`curl -X "POST" "https://www.strava.com/oauth/token?client_id=${CLIENT_ID}&client_secret=${CLIENT_SECRET}&code=${code}&grant_type=authorization_code"`);
+
     // Send a POST request using Axios and return the promise
     return axios({
         method: 'post',
