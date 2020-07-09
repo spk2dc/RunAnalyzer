@@ -64,7 +64,7 @@ router.get('/exchange_token', (req, res) => {
                     firstname: promiseData.data.athlete.firstname,
                     lastname: promiseData.data.athlete.lastname,
                     username: promiseData.data.athlete.username,
-                    location: promiseData.data.athlete.location,
+                    location: `${promiseData.data.athlete.city}, ${promiseData.data.athlete.state}`,
                     created_at: promiseData.data.athlete.created_at,
                     profile: promiseData.data.athlete.profile,
                 }
@@ -95,7 +95,7 @@ router.get('/exchange_token', (req, res) => {
     }
 })
 
-//pull data from Strava API
+//pull all activity data from Strava API and update user with it
 router.post('/refresh/:id', (req, res) => {
     // console.log('req: ', req.query);
 
