@@ -70,6 +70,7 @@ router.get('/exchange_token', (req, res) => {
                 }
             }
             const options = { upsert: true }
+
             stravaUsers.findOneAndUpdate(filter, update, options, (err, newData) => {
                 if (err) {
                     console.log('create athlete error: ', err);
@@ -77,9 +78,10 @@ router.get('/exchange_token', (req, res) => {
                 console.log('create athlete: ', newData);
             })
 
+            //find user that was created and pass data to ejs file for displaying
             stravaUsers.find({ stravaID: promiseData.data.athlete.id }, (err, athlete) => {
                 console.log('find athlete: ', athlete);
-                res.render('user_profile.ejs', { user: athlete })
+                res.render('user_profile.ejs', { user: athlete[0] })
             })
 
         }).catch((err) => {
