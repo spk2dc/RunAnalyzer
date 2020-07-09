@@ -204,10 +204,11 @@ let getDetailedActivities = (token_type, access_token, user) => {
     }
 
     Promise.allSettled(arrPromise).then((results) => {
-        console.log(results);
+        console.log('result of all detail calls: ', results);
 
         user.detailedActivities = detailedObj
         user.save()
+        console.log('detailedActivities: ', user.detailedActivities);
     })
 
     // Send a POST request using Axios and return the promise
