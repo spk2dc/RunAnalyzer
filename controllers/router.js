@@ -46,7 +46,7 @@ router.get('/exchange_token', (req, res) => {
         let exchangePromise = tokenAuthentication(req.query.code)
         // console.log('exchangePromise: ', exchangePromise);
 
-        //when promise is complete then get authenticated token from the returned data
+        //when promise is complete then get authenticated token and basic user from the returned data
         exchangePromise.then((promiseData) => {
             // console.log('exchangePromise: ', promiseData.data);
 
@@ -205,7 +205,7 @@ let getDetailedActivities = (token_type, access_token, user) => {
 
         for (let i = 0; i < results.length; i++) {
             let id = results[i].value.data.id
-            user.detailedActivities[i] = results[0].value.data
+            user.detailedActivities[id] = results[0].value.data
         }
         
         //must save mongoose database object so added data is permanent
