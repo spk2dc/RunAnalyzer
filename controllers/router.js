@@ -197,8 +197,9 @@ let getDetailedActivities = (token_type, access_token, user) => {
             }).then((activity) => {
                 //add a new key to detailed activities and set it equal to the data object pulled from Strava
                 user.detailedActivities[id] = activity.data
+                user.save()
 
-                // console.log(`detailed activity: ${user.detailedActivities[id]}`);
+                console.log(`detailed activity ${user.detailedActivities[id].name}, ${user.detailedActivities[id].id}`);
             }).catch((err) => {
                 console.log('axios get detailed activity error');
             })
