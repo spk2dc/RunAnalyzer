@@ -103,7 +103,7 @@ router.post('/refresh/:id', (req, res) => {
         const filter = { stravaID: req.params.id }
         const update = {
             $set: {
-                allActivites: activities.data
+                allActivities: activities.data
             }
         }
         const options = { new: true }
@@ -114,7 +114,7 @@ router.post('/refresh/:id', (req, res) => {
             if (err) {
                 console.log('all activities error: ', err);
             }
-            console.log('all activities: ', activities.data, 'updated user: ', newData);
+            console.log('updated user: ', newData);
             // newData.allActivites = activities.data
         })
 
