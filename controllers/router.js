@@ -7,12 +7,19 @@ const axios = require('axios').default;
 
 const CLIENT_ID = process.env.CLIENT_ID
 const CLIENT_SECRET = process.env.CLIENT_SECRET
+let access_token = ''
+let token_type = ''
+let refresh_token = ''
 
 //database schema
 const stravaUsers = require('../models/stravaUsers.js')
 
 router.use(express.urlencoded({ extended: true }))
 router.use(methodOverride('_method'))
+
+////////////////////////////////////////////////////
+///////////////////// ROUTES //////////////////////
+//////////////////////////////////////////////////
 
 router.get('/', (req, res) => {
     res.render('index.ejs');
@@ -42,30 +49,51 @@ router.get('/exchange_token', (req, res) => {
         exchangePromise.then((promiseData) => {
             // console.log('exchangePromise: ', promiseData.data);
 
-            let access_token = promiseData.data.access_token
-            let token_type = promiseData.data.token_type
-            let refresh_token = promiseData.data.refresh_token
+            access_token = promiseData.data.access_token
+            token_type = promiseData.data.token_type
+            refresh_token = promiseData.data.refresh_token
 
-
-            getAllActivities(token_type, access_token).then((activities) => {
-                res.render('user_profile.ejs', { user: promiseData.data.athlete, activities: activities.data })
-
-            }).catch((err) => {
-                console.log('activities promise error');
-
+            stravaUsers.create(promiseData.data.athlete, (err, newData) => {
+                if (err) {
+                    console.log('create athlete error: ', err);
+                }
+                console.log('create athlete: ', newData);
             })
+
+            stravaUsers.find({ stravaID: promiseData.data.athlete.stravaID }, (err, athlete) => {
+                res.render('user_profile.ejs', { user: athlete, activities: activities.data })
+            })
+
         }).catch((err) => {
             console.log('login promise error', err);
-
         })
-
-
     }
-});
+})
+
+//pull data from Strava API
+router.get('/refresh', (req, res) => {
+    // console.log('req: ', req.query);
+
+    getAllActivities(token_type, access_token).then((activities) => {
+        res.render('user_profile.ejs', { user: promiseData.data.athlete, activities: activities.data })
+
+    }).catch((err) => {
+        console.log('activities promise error', err);
+    })
+})
+
+////////////////////////////////////////////////////
+///////////////////// ROUTES //////////////////////
+//////////////////////////////////////////////////
+
+
+////////////////////////////////////////////////////
+//////////////////// METHODS //////////////////////
+//////////////////////////////////////////////////
 
 //upon successful login, request valid token from Strava API
 let tokenAuthentication = (code) => {
-    console.log(`curl -X "POST" "https://www.strava.com/oauth/token?client_id=${CLIENT_ID}&client_secret=${CLIENT_SECRET}&code=${code}&grant_type=authorization_code"`);
+    // console.log(`curl -X "POST" "https://www.strava.com/oauth/token?client_id=${CLIENT_ID}&client_secret=${CLIENT_SECRET}&code=${code}&grant_type=authorization_code"`);
 
     // Send a POST request using Axios and return the promise
     return axios({

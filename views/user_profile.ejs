@@ -15,6 +15,10 @@
     <h3>Location: <%= user.city %>, <%= user.state %></h3>
     <h3>Account Created: <%= new Date(user.created_at) %></h3>
 
+    <form action="/refresh" method="get">
+        <button type="submit">Refresh Data</button>
+    </form>
+
     <table>
         <thead>
             <th>Name</th>
