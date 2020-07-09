@@ -37,6 +37,7 @@ const userSchema = new mongoose.Schema({
     created_at: { type: Date },
     profile: { type: String },
     allActivities: { type: Array, "default": [] },
+    detailedActivities: { type: Object, "default": {} },
 },
     {
         timestamps: true

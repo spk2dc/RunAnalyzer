@@ -71,11 +71,11 @@ router.get('/exchange_token', (req, res) => {
             }
             const options = { upsert: true }
 
-            stravaUsers.findOneAndUpdate(filter, update, options, (err, newData) => {
+            stravaUsers.findOneAndUpdate(filter, update, options, (err, foundUser) => {
                 if (err) {
                     console.log('create athlete error: ', err);
                 }
-                // console.log('create athlete: ', newData);
+                // console.log('create athlete: ', foundUser);
             })
 
             //find user that was created and pass data to ejs file for displaying
@@ -110,18 +110,18 @@ router.post('/refresh/:id', (req, res) => {
 
         // console.log('update activities filter: ', filter, 'update: ', update);
 
-        stravaUsers.findOneAndUpdate(filter, update, options, (err, newData) => {
+        stravaUsers.findOneAndUpdate(filter, update, options, (err, foundUser) => {
             if (err) {
                 console.log('all activities error: ', err);
             }
-            console.log('updated user: ', newData);
-            // newData.allActivites = activities.data
+            // console.log('updated user: ', foundUser);
+            getDetailedActivities(token_type, access_token, foundUser)
         })
 
         res.redirect('/exchange_token')
 
     }).catch((err) => {
-        console.log('activities promise error', err);
+        console.log('get all activities promise error', err);
     })
 })
 
@@ -148,6 +148,8 @@ let tokenAuthentication = (code) => {
             code: code,
             grant_type: 'authorization_code'
         }
+    }).catch((err) => {
+        console.log('axios token authentication error', err);
     })
 }
 
@@ -169,6 +171,40 @@ let getAllActivities = (token_type, access_token) => {
             Accept: 'application/json'
         }
     })
+}
+
+//get user's detailed activities for each one in allActivities array
+let getDetailedActivities = (token_type, access_token, user) => {
+    // console.log(`curl -X "GET" "https://www.strava.com/api/v3/athlete/activities?before=&after=&page=1&per_page=30" "Authorization: ${token_type} ${access_token}"`);
+
+    for (let i = 0; i < user.allActivities.length; i++) {
+        let id = user.allActivities[i].id
+        //if there is not already a detailed activity object then add it
+        if (!user.detailedActivities.hasOwnProperty(id)) {
+            //send request to Strava to get detailed activity information
+            axios({
+                method: 'get',
+                url: `https://www.strava.com/api/v3/athlete/${id}`,
+                data: {
+                    include_all_efforts: true
+                },
+                headers: {
+                    Authorization: `${token_type} ${access_token}`,
+                    Accept: 'application/json'
+                }
+            }).then((activity) => {
+                //add a new key to detailed activities and set it equal to the data object pulled from Strava
+                user.detailedActivities[id] = activity
+
+                console.log('detailed activity: ', user.detailedActivities);
+            }).catch((err) => {
+                console.log('axios get detailed activity error', err);
+            })
+        }
+    }
+
+    // Send a POST request using Axios and return the promise
+    return
 }
 
 module.exports = router;
