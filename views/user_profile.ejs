@@ -11,11 +11,11 @@
     <h1><%= user.firstname %> <%= user.lastname %></h1>
     <img src="<%= user.profile %>" alt="user picture">
     <h3>Username: <%= user.username %></h3>
-    <h3>ID: <%= user.id %></h3>
+    <h3>ID: <%= user.stravaID %></h3>
     <h3>Location: <%= user.city %>, <%= user.state %></h3>
-    <h3>Account Created: <%= new Date(user.created_at) %></h3>
+    <h3>Account Created: <%= user.created_at %></h3>
 
-    <form action="/refresh" method="get">
+    <form action="/refresh/<%= user.stravaID %>" method="get">
         <button type="submit">Refresh Data</button>
     </form>
 
@@ -32,19 +32,21 @@
             <th>Max Speed</th>
         </thead>
         <tbody>
-            <% for(let i=0; i < activities.length; i++) { %>
-                <% let fullDate = new Date(activities[i].start_date_local) %>
-            <tr>
-                <td><%= activities[i].name %></td>
-                <td><%= activities[i].distance %></td>
-                <td><%= activities[i].moving_time %></td>
-                <td><%= activities[i].elapsed_time %></td>
-                <td><%= activities[i].type %></td>
-                <td><%= fullDate.toLocaleDateString('en-US', { year: 'numeric', month: '2-digit', day: '2-digit' }) %></td>
-                <td><%= fullDate.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit' }) %></td>
-                <td><%= activities[i].average_speed %></td>
-                <td><%= activities[i].max_speed %></td>
-            </tr>
+            <% if (typeof user.allActivities !== 'undefined') { %>
+                <% for(let i=0; i < user.allActivities.length; i++) { %>
+                    <% let fullDate = new Date(user.allActivities[i].start_date_local) %>
+                <tr>
+                    <td><%= user.allActivities[i].name %></td>
+                    <td><%= user.allActivities[i].distance %></td>
+                    <td><%= user.allActivities[i].moving_time %></td>
+                    <td><%= user.allActivities[i].elapsed_time %></td>
+                    <td><%= user.allActivities[i].type %></td>
+                    <td><%= fullDate.toLocaleDateString('en-US', { year: 'numeric', month: '2-digit', day: '2-digit' }) %></td>
+                    <td><%= fullDate.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit' }) %></td>
+                    <td><%= user.allActivities[i].average_speed %></td>
+                    <td><%= user.allActivities[i].max_speed %></td>
+                </tr>
+                <% } %>
             <% } %>
         </tbody>
     </table>

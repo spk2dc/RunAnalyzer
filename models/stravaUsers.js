@@ -35,7 +35,7 @@ const userSchema = new mongoose.Schema({
     username: { type: String },
     location: { type: String },
     created_at: { type: Date },
-    img: { type: String },
+    profile: { type: String },
     allActivities: [{ type: Object }],
 },
     {

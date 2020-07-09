@@ -53,15 +53,33 @@ router.get('/exchange_token', (req, res) => {
             token_type = promiseData.data.token_type
             refresh_token = promiseData.data.refresh_token
 
-            stravaUsers.create(promiseData.data.athlete, (err, newData) => {
+            //add stravaID field and set it to current id field to avoid confusion with mongo database's automatic id field creation
+            promiseData.data.athlete.stravaID = promiseData.data.athlete.id
+
+            //find user in database and update or upsert if doesn't exist
+            const filter = { stravaID: promiseData.data.athlete.id }
+            const update = {
+                "$set": {
+                    stravaID: promiseData.data.athlete.id,
+                    firstname: promiseData.data.athlete.firstname,
+                    lastname: promiseData.data.athlete.lastname,
+                    username: promiseData.data.athlete.username,
+                    location: promiseData.data.athlete.location,
+                    created_at: promiseData.data.athlete.created_at,
+                    profile: promiseData.data.athlete.profile,
+                }
+            }
+            const options = { upsert: true }
+            stravaUsers.findOneAndUpdate(filter, update, options, (err, newData) => {
                 if (err) {
                     console.log('create athlete error: ', err);
                 }
                 console.log('create athlete: ', newData);
             })
 
-            stravaUsers.find({ stravaID: promiseData.data.athlete.stravaID }, (err, athlete) => {
-                res.render('user_profile.ejs', { user: athlete, activities: activities.data })
+            stravaUsers.find({ stravaID: promiseData.data.athlete.id }, (err, athlete) => {
+                console.log('find athlete: ', athlete);
+                res.render('user_profile.ejs', { user: athlete })
             })
 
         }).catch((err) => {
@@ -71,11 +89,24 @@ router.get('/exchange_token', (req, res) => {
 })
 
 //pull data from Strava API
-router.get('/refresh', (req, res) => {
+router.post('/refresh/:id', (req, res) => {
     // console.log('req: ', req.query);
 
     getAllActivities(token_type, access_token).then((activities) => {
-        res.render('user_profile.ejs', { user: promiseData.data.athlete, activities: activities.data })
+        const filter = { stravaID: req.params.id }
+        const update = { allActivites: activities }
+        const options = { new: true }
+
+        console.log('update activities filter: ', filter, 'update: ', update);
+
+        stravaUsers.findOneAndUpdate(filter, update, options, (err, newData) => {
+            if (err) {
+                console.log('all activities error: ', err);
+            }
+            console.log('all activities: ', newData);
+        })
+
+        res.redirect('/exchange_token')
 
     }).catch((err) => {
         console.log('activities promise error', err);
@@ -147,5 +178,7 @@ https://stackoverflow.com/questions/10183291/how-to-get-the-full-url-in-express
 https://stackoverflow.com/questions/19485353/function-to-convert-timestamp-to-human-date-in-javascript/34900794
 
 https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date
+
+https://mongoosejs.com/docs/api.html
 
 */
