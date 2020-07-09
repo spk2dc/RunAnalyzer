@@ -179,12 +179,14 @@ let getDetailedActivities = (token_type, access_token, user) => {
 
     for (let i = 0; i < user.allActivities.length; i++) {
         let id = user.allActivities[i].id
+        // console.log(`allActivities[${i}].${id} = `, user.allActivities[i].id);
+
         //if there is not already a detailed activity object then add it
         if (!user.detailedActivities.hasOwnProperty(id)) {
             //send request to Strava to get detailed activity information
             axios({
                 method: 'get',
-                url: `https://www.strava.com/api/v3/athlete/${id}`,
+                url: `https://www.strava.com/api/v3/activities/${id}`,
                 data: {
                     include_all_efforts: true
                 },
@@ -194,11 +196,11 @@ let getDetailedActivities = (token_type, access_token, user) => {
                 }
             }).then((activity) => {
                 //add a new key to detailed activities and set it equal to the data object pulled from Strava
-                user.detailedActivities[id] = activity
+                user.detailedActivities[id] = activity.data
 
-                console.log('detailed activity: ', user.detailedActivities);
+                // console.log(`detailed activity: ${user.detailedActivities[id]}`);
             }).catch((err) => {
-                console.log('axios get detailed activity error', err);
+                console.log('axios get detailed activity error');
             })
         }
     }
