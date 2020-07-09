@@ -69,19 +69,15 @@ router.get('/exchange_token', (req, res) => {
                     profile: promiseData.data.athlete.profile,
                 }
             }
-            const options = { upsert: true }
+            const options = { new: true, upsert: true }
 
             stravaUsers.findOneAndUpdate(filter, update, options, (err, foundUser) => {
                 if (err) {
                     console.log('create athlete error: ', err);
                 }
                 // console.log('create athlete: ', foundUser);
-            })
+                res.render('user_profile.ejs', { user: foundUser })
 
-            //find user that was created and pass data to ejs file for displaying
-            stravaUsers.find({ stravaID: currentUserID }, (err, athlete) => {
-                // console.log('find athlete: ', athlete);
-                res.render('user_profile.ejs', { user: athlete[0] })
             })
 
         }).catch((err) => {
@@ -176,15 +172,17 @@ let getAllActivities = (token_type, access_token) => {
 //get user's detailed activities for each one in allActivities array
 let getDetailedActivities = (token_type, access_token, user) => {
     // console.log(`curl -X "GET" "https://www.strava.com/api/v3/athlete/activities?before=&after=&page=1&per_page=30" "Authorization: ${token_type} ${access_token}"`);
+    let arrPromise = []
+    let detailedObj = {}
 
     for (let i = 0; i < user.allActivities.length; i++) {
-        let id = user.allActivities[i].id
+        let id = user.allActivities[i].id.toString(10)
         // console.log(`allActivities[${i}].${id} = `, user.allActivities[i].id);
 
         //if there is not already a detailed activity object then add it
         if (!user.detailedActivities.hasOwnProperty(id)) {
             //send request to Strava to get detailed activity information
-            axios({
+            arrPromise[i] = axios({
                 method: 'get',
                 url: `https://www.strava.com/api/v3/activities/${id}`,
                 data: {
@@ -196,15 +194,21 @@ let getDetailedActivities = (token_type, access_token, user) => {
                 }
             }).then((activity) => {
                 //add a new key to detailed activities and set it equal to the data object pulled from Strava
-                user.detailedActivities[id] = activity.data
-                user.save()
+                detailedObj[id] = activity.data
 
-                console.log(`detailed activity ${user.detailedActivities[id].name}, ${user.detailedActivities[id].id}`);
+                // console.log(`detailed activity ${user.detailedActivities[id].name}, ${user.detailedActivities[id].id}`);
             }).catch((err) => {
-                console.log('axios get detailed activity error');
+                console.log('axios get detailed activity error', err);
             })
         }
     }
+
+    Promise.allSettled(arrPromise).then((results) => {
+        console.log(results);
+
+        user.detailedActivities = detailedObj
+        user.save()
+    })
 
     // Send a POST request using Axios and return the promise
     return
