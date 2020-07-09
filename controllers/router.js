@@ -175,11 +175,12 @@ let getDetailedActivities = (token_type, access_token, user) => {
     let arrPromise = []
     let detailedObj = {}
 
+    //loop through all activities and get detailed data for each one that does not already have it
     for (let i = 0; i < user.allActivities.length; i++) {
         let id = user.allActivities[i].id.toString(10)
         // console.log(`allActivities[${i}].${id} = `, user.allActivities[i].id);
 
-        //if there is not already a detailed activity object then add it
+        //if there is not already a detailed activity object then get the data for it from Strava
         if (!user.detailedActivities.hasOwnProperty(id)) {
             //send request to Strava to get detailed activity information
             arrPromise[i] = axios({
@@ -192,27 +193,26 @@ let getDetailedActivities = (token_type, access_token, user) => {
                     Authorization: `${token_type} ${access_token}`,
                     Accept: 'application/json'
                 }
-            }).then((activity) => {
-                //add a new key to detailed activities and set it equal to the data object pulled from Strava
-                detailedObj[id] = activity.data
-
-                // console.log(`detailed activity ${user.detailedActivities[id].name}, ${user.detailedActivities[id].id}`);
             }).catch((err) => {
                 console.log('axios get detailed activity error', err);
             })
         }
     }
 
+    //once all calls to Strava are done add all the data to existing user's detailedActivities field
     Promise.allSettled(arrPromise).then((results) => {
-        console.log('result of all detail calls: ', results);
+        // console.log('result of all detail calls: ', results, 'first result data: ', results[0].value.data);
 
-        user.detailedActivities = detailedObj
+        for (let i = 0; i < results.length; i++) {
+            let id = results[i].value.data.id
+            user.detailedActivities[i] = results[0].value.data
+        }
+        
+        //must save mongoose database object so added data is permanent
         user.save()
-        console.log('detailedActivities: ', user.detailedActivities);
-    })
 
-    // Send a POST request using Axios and return the promise
-    return
+        // console.log('detailedActivities: ', user.detailedActivities);
+    })
 }
 
 module.exports = router;
