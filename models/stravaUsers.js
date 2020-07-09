@@ -36,7 +36,7 @@ const userSchema = new mongoose.Schema({
     location: { type: String },
     created_at: { type: Date },
     profile: { type: String },
-    allActivities: [{ type: Object }],
+    allActivities: { type: Array, "default": [] },
 },
     {
         timestamps: true

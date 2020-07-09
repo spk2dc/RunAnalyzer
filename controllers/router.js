@@ -10,6 +10,7 @@ const CLIENT_SECRET = process.env.CLIENT_SECRET
 let access_token = ''
 let token_type = ''
 let refresh_token = ''
+let currentUserID = ''
 
 //database schema
 const stravaUsers = require('../models/stravaUsers.js')
@@ -39,9 +40,9 @@ router.get('/login', (req, res) => {
 
 //page redirected to after login page
 router.get('/exchange_token', (req, res) => {
-    // console.log('req: ', req.query);
+    // console.log('token: ', access_token, 'curruser: ', currentUserID.length);
 
-    if (req.query.hasOwnProperty('code')) {
+    if (req.query.hasOwnProperty('code') && access_token.length < 1) {
         let exchangePromise = tokenAuthentication(req.query.code)
         // console.log('exchangePromise: ', exchangePromise);
 
@@ -52,15 +53,14 @@ router.get('/exchange_token', (req, res) => {
             access_token = promiseData.data.access_token
             token_type = promiseData.data.token_type
             refresh_token = promiseData.data.refresh_token
-
-            //add stravaID field and set it to current id field to avoid confusion with mongo database's automatic id field creation
-            promiseData.data.athlete.stravaID = promiseData.data.athlete.id
+            //id is returned as a number, convert to string
+            currentUserID = promiseData.data.athlete.id.toString(10)
 
             //find user in database and update or upsert if doesn't exist
-            const filter = { stravaID: promiseData.data.athlete.id }
+            const filter = { stravaID: currentUserID }
             const update = {
                 "$set": {
-                    stravaID: promiseData.data.athlete.id,
+                    stravaID: currentUserID,
                     firstname: promiseData.data.athlete.firstname,
                     lastname: promiseData.data.athlete.lastname,
                     username: promiseData.data.athlete.username,
@@ -75,17 +75,22 @@ router.get('/exchange_token', (req, res) => {
                 if (err) {
                     console.log('create athlete error: ', err);
                 }
-                console.log('create athlete: ', newData);
+                // console.log('create athlete: ', newData);
             })
 
             //find user that was created and pass data to ejs file for displaying
-            stravaUsers.find({ stravaID: promiseData.data.athlete.id }, (err, athlete) => {
-                console.log('find athlete: ', athlete);
+            stravaUsers.find({ stravaID: currentUserID }, (err, athlete) => {
+                // console.log('find athlete: ', athlete);
                 res.render('user_profile.ejs', { user: athlete[0] })
             })
 
         }).catch((err) => {
             console.log('login promise error', err);
+        })
+    } else if (currentUserID.length > 0) {
+        stravaUsers.find({ stravaID: currentUserID }, (err, athlete) => {
+            // console.log('elseif find athlete: ', athlete);
+            res.render('user_profile.ejs', { user: athlete[0] })
         })
     }
 })
@@ -96,16 +101,21 @@ router.post('/refresh/:id', (req, res) => {
 
     getAllActivities(token_type, access_token).then((activities) => {
         const filter = { stravaID: req.params.id }
-        const update = { allActivites: activities }
+        const update = {
+            $set: {
+                allActivites: activities.data
+            }
+        }
         const options = { new: true }
 
-        console.log('update activities filter: ', filter, 'update: ', update);
+        // console.log('update activities filter: ', filter, 'update: ', update);
 
         stravaUsers.findOneAndUpdate(filter, update, options, (err, newData) => {
             if (err) {
                 console.log('all activities error: ', err);
             }
-            console.log('all activities: ', newData);
+            console.log('all activities: ', activities.data, 'updated user: ', newData);
+            // newData.allActivites = activities.data
         })
 
         res.redirect('/exchange_token')

@@ -15,7 +15,11 @@
     <h3>Location: <%= user.city %>, <%= user.state %></h3>
     <h3>Account Created: <%= user.created_at %></h3>
 
-    <form action="/refresh/<%= user.stravaID %>" method="get">
+    <form action="/" method="get">
+        <button type="submit">Home</button>
+    </form>
+
+    <form action="/refresh/<%= user.stravaID %>" method="post">
         <button type="submit">Refresh Data</button>
     </form>
 
