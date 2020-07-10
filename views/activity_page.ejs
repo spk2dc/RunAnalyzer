@@ -40,7 +40,7 @@
                 <% for(let i=0; i < user.allActivities.length; i++) { %>
                     <% let fullDate = new Date(user.allActivities[i].start_date_local) %>
                 <tr>
-                    <td><a href="/activity/<%= user.allActivities[i].id %>"><%= user.allActivities[i].name %></a></td>
+                    <td><a href=""><%= user.allActivities[i].name %></a></td>
                     <td><%= user.allActivities[i].distance %></td>
                     <td><%= user.allActivities[i].moving_time %></td>
                     <td><%= user.allActivities[i].elapsed_time %></td>

@@ -121,6 +121,31 @@ router.post('/refresh/:id', (req, res) => {
     })
 })
 
+//show page for each activity
+router.get('/activity/:id', (req, res) => {
+    // console.log('req: ', req.query);
+    const filter = { stravaID: currentUserID }
+    const options = { new: true }
+    const activityID = req.params.id.toString(10)
+
+    stravaUsers.findOne(filter, (err, foundUser) => {
+        if (err) {
+            console.log('show page find error: ', err);
+        }
+        console.log('filter: ', filter);
+        // console.log('updated user: ', foundUser);
+        console.log('activityID: ', activityID);
+
+        //render page if activity id exists
+        if (foundUser.detailedActivities.hasOwnProperty(activityID)) {
+            // res.render('activity_page.ejs', {activity: foundUser.detailedActivities.activityID})
+            res.send(foundUser.detailedActivities)
+
+        }
+        res.send(foundUser.detailedActivities)
+    })
+})
+
 ////////////////////////////////////////////////////
 ///////////////////// ROUTES //////////////////////
 //////////////////////////////////////////////////
@@ -207,7 +232,7 @@ let getDetailedActivities = (token_type, access_token, user) => {
             let id = results[i].value.data.id
             user.detailedActivities[id] = results[0].value.data
         }
-        
+
         //must save mongoose database object so added data is permanent
         user.save()
 
