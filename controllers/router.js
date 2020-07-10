@@ -133,16 +133,15 @@ router.get('/activity/:id', (req, res) => {
             console.log('show page find error: ', err);
         }
         console.log('filter: ', filter);
-        // console.log('updated user: ', foundUser);
+        console.log('updated user activity: ', foundUser.detailedActivities[activityID]);
         console.log('activityID: ', activityID);
 
         //render page if activity id exists
         if (foundUser.detailedActivities.hasOwnProperty(activityID)) {
             // res.render('activity_page.ejs', {activity: foundUser.detailedActivities.activityID})
-            res.send(foundUser.detailedActivities)
+            res.send(foundUser.detailedActivities[activityID])
 
         }
-        res.send(foundUser.detailedActivities[activityID])
     })
 })
 
