@@ -142,7 +142,7 @@ router.get('/activity/:id', (req, res) => {
             res.send(foundUser.detailedActivities)
 
         }
-        res.send(foundUser.detailedActivities)
+        res.send(foundUser.detailedActivities[activityID])
     })
 })
 
@@ -229,8 +229,8 @@ let getDetailedActivities = (token_type, access_token, user) => {
         // console.log('result of all detail calls: ', results, 'first result data: ', results[0].value.data);
 
         for (let i = 0; i < results.length; i++) {
-            let id = results[i].value.data.id
-            user.detailedActivities[id] = results[0].value.data
+            let detailID = results[i].value.data.id
+            user.detailedActivities[detailID] = results[i].value.data
         }
 
         //must save mongoose database object so added data is permanent
