@@ -1,19 +1,42 @@
 <!DOCTYPE html>
 <html lang="en">
 
+<% let activity = user.detailedActivities[activityID] %>
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><%= user.firstname %>'s Profile</title>
+    <title><%= user.firstname %>'s <%= activity.type %></title>
 </head>
 
+<%
+
+//calculations for table values that are not properties
+
+let total_time = new Date(1000 * activity.elapsed_time).toISOString().substr(11, 8)
+let moving_time = new Date(1000 * activity.moving_time).toISOString().substr(11, 8)
+let km = activity.distance/1000
+let mi = activity.distance/1000*0.621371
+let paceSecKM = activity.moving_time/km
+let paceMinKM = new Date(1000 * paceSecKM).toISOString().substr(14, 5)
+let paceSecMI = activity.moving_time/mi
+let paceMinMI = new Date(1000 * paceSecMI).toISOString().substr(14, 5)
+
+%>
+
 <body>
-    <h1><%= user.firstname %> <%= user.lastname %></h1>
-    <img src="<%= user.profile %>" alt="user picture">
-    <h3>Username: <%= user.username %></h3>
-    <h3>ID: <%= user.stravaID %></h3>
-    <h3>Location: <%= user.location %></h3>
-    <h3>Account Created: <%= user.created_at %></h3>
+    <h1><a href="https://www.strava.com/activities/<%= activity.id %>"><%= activity.name %></a></h1>
+    <h3>Date:
+        <%//= activity.start_date_local.toLocaleDateString('en-US', { year: 'numeric', month: '2-digit', day: '2-digit' }) %>
+    </h3>
+    <h3>Total Time: <%= total_time %></h3>
+    <h3>Moving Time: <%= moving_time %></h3>
+    <h3>Elevation Gain: <%= activity.total_elevation_gain %></h3>
+    <h3>KMs: <%= km.toFixed(2) %></h3>
+    <h3>Miles: <%= mi.toFixed(2) %></h3>
+    <%  %>
+    <h3>Pace (min/km): <%= paceMinKM %></h3>
+    <h3>Pace (min/mi): <%= paceMinMI %></h3>
 
     <form action="/" method="get">
         <button type="submit">Home</button>
@@ -23,37 +46,7 @@
         <button type="submit">Refresh Data</button>
     </form>
 
-    <table>
-        <thead>
-            <th>Name</th>
-            <th>Distance</th>
-            <th>Moving Time</th>
-            <th>Elapsed Time</th>
-            <th>Activity Type</th>
-            <th>Date</th>
-            <th>Time</th>
-            <th>Average Speed</th>
-            <th>Max Speed</th>
-        </thead>
-        <tbody>
-            <% if (typeof user.allActivities !== 'undefined') { %>
-                <% for(let i=0; i < user.allActivities.length; i++) { %>
-                    <% let fullDate = new Date(user.allActivities[i].start_date_local) %>
-                <tr>
-                    <td><a href=""><%= user.allActivities[i].name %></a></td>
-                    <td><%= user.allActivities[i].distance %></td>
-                    <td><%= user.allActivities[i].moving_time %></td>
-                    <td><%= user.allActivities[i].elapsed_time %></td>
-                    <td><%= user.allActivities[i].type %></td>
-                    <td><%= fullDate.toLocaleDateString('en-US', { year: 'numeric', month: '2-digit', day: '2-digit' }) %></td>
-                    <td><%= fullDate.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit' }) %></td>
-                    <td><%= user.allActivities[i].average_speed %></td>
-                    <td><%= user.allActivities[i].max_speed %></td>
-                </tr>
-                <% } %>
-            <% } %>
-        </tbody>
-    </table>
+
 </body>
 
 </html>

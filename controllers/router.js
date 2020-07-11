@@ -138,8 +138,8 @@ router.get('/activity/:id', (req, res) => {
 
         //render page if activity id exists
         if (foundUser.detailedActivities.hasOwnProperty(activityID)) {
-            // res.render('activity_page.ejs', {activity: foundUser.detailedActivities.activityID})
-            res.send(foundUser.detailedActivities[activityID])
+            res.render('activity_page.ejs', { user: foundUser, activityID: activityID })
+            // res.send(foundUser.detailedActivities[activityID])
 
         }
     })
@@ -260,5 +260,7 @@ https://stackoverflow.com/questions/19485353/function-to-convert-timestamp-to-hu
 https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date
 
 https://mongoosejs.com/docs/api.html
+
+https://stackoverflow.com/questions/6312993/javascript-seconds-to-time-string-with-format-hhmmss
 
 */
