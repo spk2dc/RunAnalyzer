@@ -6,6 +6,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+    
+    <link rel="stylesheet" href="/css/style.css"> 
+
     <title><%= user.firstname %>'s <%= activity.type %></title>
 </head>
 
@@ -26,27 +32,104 @@ let paceMinMI = new Date(1000 * paceSecMI).toISOString().substr(14, 5)
 
 <body>
     <h1><a href="https://www.strava.com/activities/<%= activity.id %>"><%= activity.name %></a></h1>
+
+    <form action="/user_overview" method="get">
+        <button type="submit">Overview Page</button>
+    </form>
+
     <h3>Date:
-        <%//= activity.start_date_local.toLocaleDateString('en-US', { year: 'numeric', month: '2-digit', day: '2-digit' }) %>
+        <%= new Date(activity.start_date_local).toLocaleDateString('en-US', { year: 'numeric', month: '2-digit', day: '2-digit' }) %>
     </h3>
+    <h3>Start Time:
+        <%= new Date(activity.start_date_local).toLocaleTimeString('en-US', { year: 'numeric', month: '2-digit', day: '2-digit' }) %>
+    </h3>
+    <h3>Activity Type: <%= activity.type %></h3>
     <h3>Total Time: <%= total_time %></h3>
     <h3>Moving Time: <%= moving_time %></h3>
-    <h3>Elevation Gain: <%= activity.total_elevation_gain %></h3>
+    <h3>Average Speed (m/s): <%= activity.average_speed %></h3>
+    <h3>Max Speed (m/s): <%= activity.max_speed %></h3>
+    <h3>Elevation Gain (m): <%= activity.total_elevation_gain %></h3>
+    <h3>METRIC</h3>
     <h3>KMs: <%= km.toFixed(2) %></h3>
+    <h3>Pace (min/km): <%= paceMinKM %></h3>
+    <h3>Splits</h3>
+    <table>
+        <thead>
+            <th>KMs #</th>
+            <th>Total Time (min)</th>
+            <th>Average Speed (min/km)</th>
+            <th>Elevation (m)</th>
+        </thead>
+        <tbody>
+            <% for(const split of activity.splits_standard) { %>
+                <%
+                let splitKM = split.distance/1000
+                let splitPaceSecKM = split.moving_time/splitKM
+                let splitPaceMinKM = new Date(1000 * splitPaceSecKM).toISOString().substr(14, 5)
+                %>
+
+                <tr>
+                    <td><% if(Math.round(splitKM) != 1) { %>
+                            <%= splitKM.toFixed(2) %>
+                        <% } else { %>
+                            <%= split.split %>
+                        <% } %>
+                        </td>
+                    <td><%= new Date(1000 * split.elapsed_time).toISOString().substr(14, 5) %></td>
+                    <td><%= splitPaceMinKM %></td>
+                    <td><%= split.elevation_difference %></td>
+
+                </tr>
+            <% } %>
+        </tbody>
+    </table>
+    <br>
+
+
+    <h3>US CUSTOMARY</h3>
     <h3>Miles: <%= mi.toFixed(2) %></h3>
     <%  %>
-    <h3>Pace (min/km): <%= paceMinKM %></h3>
     <h3>Pace (min/mi): <%= paceMinMI %></h3>
+    <h3>Splits</h3>
+    <table>
+        <thead>
+            <th>Mile #</th>
+            <th>Total Time (min)</th>
+            <th>Average Speed (min/mi)</th>
+            <th>Elevation (m)</th>
+        </thead>
+        <tbody>
+            <% for(const split of activity.splits_standard) { %>
+                <%
+                let splitMI = split.distance/1000*0.621371
+                let splitPaceSecMI = split.moving_time/splitMI
+                let splitPaceMinMI = new Date(1000 * splitPaceSecMI).toISOString().substr(14, 5)
+                %>
 
-    <form action="/" method="get">
-        <button type="submit">Home</button>
-    </form>
+                <tr>
+                    <td><% if(Math.round(splitMI) != 1) { %>
+                            <%= splitMI.toFixed(2) %>
+                        <% } else { %>
+                            <%= split.split %>
+                        <% } %>
+                        </td>
+                    <td><%= new Date(1000 * split.elapsed_time).toISOString().substr(14, 5) %></td>
+                    <td><%= splitPaceMinMI %></td>
+                    <td><%= split.elevation_difference %></td>
 
-    <form action="/refresh/<%= user.stravaID %>" method="post">
-        <button type="submit">Refresh Data</button>
-    </form>
+                </tr>
+            <% } %>
+        </tbody>
+    </table>
 
 
+
+
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js" integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" crossorigin="anonymous"></script>
 </body>
 
 </html>

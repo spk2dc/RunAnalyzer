@@ -4,6 +4,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+    
+    <link rel="stylesheet" href="/css/style.css"> 
+
     <title><%= user.firstname %>'s Profile</title>
 </head>
 
@@ -16,7 +22,7 @@
     <h3>Account Created: <%= user.created_at %></h3>
 
     <form action="/" method="get">
-        <button type="submit">Home</button>
+        <button type="submit">Logout</button>
     </form>
 
     <form action="/refresh/<%= user.stravaID %>" method="post">
@@ -26,14 +32,15 @@
     <table>
         <thead>
             <th>Name</th>
-            <th>Distance</th>
+            <th>Date</th>
+            <th>Start Time</th>
+            <th>Activity Type</th>
+            <th>Distance (km)</th>
+            <th>Distance (mi)</th>
             <th>Moving Time</th>
             <th>Elapsed Time</th>
-            <th>Activity Type</th>
-            <th>Date</th>
-            <th>Time</th>
-            <th>Average Speed</th>
-            <th>Max Speed</th>
+            <th>Average Speed (m/s)</th>
+            <th>Max Speed (m/s)</th>
         </thead>
         <tbody>
             <% if (typeof user.allActivities !== 'undefined') { %>
@@ -41,12 +48,13 @@
                     <% let fullDate = new Date(user.allActivities[i].start_date_local) %>
                 <tr>
                     <td><a href="/activity/<%= user.allActivities[i].id %>"><%= user.allActivities[i].name %></a></td>
-                    <td><%= user.allActivities[i].distance %></td>
-                    <td><%= user.allActivities[i].moving_time %></td>
-                    <td><%= user.allActivities[i].elapsed_time %></td>
-                    <td><%= user.allActivities[i].type %></td>
                     <td><%= fullDate.toLocaleDateString('en-US', { year: 'numeric', month: '2-digit', day: '2-digit' }) %></td>
                     <td><%= fullDate.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit' }) %></td>
+                    <td><%= user.allActivities[i].type %></td>
+                    <td><%= (user.allActivities[i].distance/1000).toFixed(2) %></td>
+                    <td><%= (user.allActivities[i].distance/1000*0.621371).toFixed(2) %></td>
+                    <td><%= new Date(1000 * user.allActivities[i].moving_time).toISOString().substr(11, 8) %></td>
+                    <td><%= new Date(1000 * user.allActivities[i].elapsed_time).toISOString().substr(11, 8) %></td>
                     <td><%= user.allActivities[i].average_speed %></td>
                     <td><%= user.allActivities[i].max_speed %></td>
                 </tr>
@@ -54,6 +62,15 @@
             <% } %>
         </tbody>
     </table>
+
+
+
+
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js" integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" crossorigin="anonymous"></script>
 </body>
 
 </html>

@@ -44,6 +44,8 @@ app.use(express.json());// returns middleware that only parses JSON - may or may
 //use method override
 app.use(methodOverride('_method'));// allow POST, PUT and DELETE from a form
 
+app.use(express.static('public')); //tells express to try to match requests with files in the directory called 'public' for CSS files
+
 
 //___________________
 // Routes

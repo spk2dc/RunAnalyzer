@@ -29,7 +29,7 @@ router.get('/', (req, res) => {
 //prompt user to login
 router.get('/login', (req, res) => {
     let scope = 'read_all,profile:read_all,activity:read_all'
-    let redirect = `http://${req.get('host')}/exchange_token`
+    let redirect = `http://${req.get('host')}/user_overview`
     let url = `https://www.strava.com/oauth/authorize?client_id=${CLIENT_ID}&response_type=code&redirect_uri=${redirect}&approval_prompt=auto&scope=${scope}`
 
     console.log('current url: ', `${req.get('host')}${req.originalUrl}`)
@@ -39,7 +39,7 @@ router.get('/login', (req, res) => {
 });
 
 //page redirected to after login page
-router.get('/exchange_token', (req, res) => {
+router.get('/user_overview', (req, res) => {
     // console.log('token: ', access_token, 'curruser: ', currentUserID.length);
 
     if (req.query.hasOwnProperty('code') && access_token.length < 1) {
@@ -114,7 +114,7 @@ router.post('/refresh/:id', (req, res) => {
             getDetailedActivities(token_type, access_token, foundUser)
         })
 
-        res.redirect('/exchange_token')
+        res.redirect('/user_overview')
 
     }).catch((err) => {
         console.log('get all activities promise error', err);
@@ -132,9 +132,7 @@ router.get('/activity/:id', (req, res) => {
         if (err) {
             console.log('show page find error: ', err);
         }
-        console.log('filter: ', filter);
-        console.log('updated user activity: ', foundUser.detailedActivities[activityID]);
-        console.log('activityID: ', activityID);
+        // console.log('updated user activity: ', foundUser.detailedActivities[activityID]);
 
         //render page if activity id exists
         if (foundUser.detailedActivities.hasOwnProperty(activityID)) {
