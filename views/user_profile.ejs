@@ -26,7 +26,11 @@
         <img src="<%= imgPath %>" alt="user picture" class="img-thumbnail w-25 rounded mx-auto d-block">
 
         <div class="container text-left" style="width: 470px;">
-            <h3 class="mx-auto d-block"><span class="font-weight-bold">Username: </span><%= user.username %></h3>
+            <% let username = 'None' %>
+            <% if(user.username != null) { %>
+                <% username = user.username %>
+            <% } %>
+            <h3 class="mx-auto d-block"><span class="font-weight-bold">Username: </span><%= username %></h3>
             <h3 class="mx-auto d-block"><span class="font-weight-bold">ID: </span><%= user.stravaID %></h3>
             <h3 class="mx-auto d-block"><span class="font-weight-bold">Location: </span><%= user.location %></h3>
             <h3 class="mx-auto d-block"><span class="font-weight-bold">Account Created: </span><%= user.created_at %></h3>
