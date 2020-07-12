@@ -199,7 +199,19 @@ router.delete('/delete/:id', (req, res) => {
         })
 
     //redirect back to home page
-    res.redirect('/')
+    res.redirect('/logout')
+
+})
+//**********************DESTROY ROUTE**********************//
+
+
+//**********************LOGOUT ROUTE**********************//
+//delete user and all of their data, then logout and deauthenticate this website's access to their account
+router.get('/logout', (req, res) => {
+    let baseurl = req.get('host')
+
+    //redirect back to home page
+    res.render('logout.ejs', { baseurl: baseurl })
 
 })
 //**********************DESTROY ROUTE**********************//
@@ -323,5 +335,17 @@ https://mongoosejs.com/docs/api.html
 https://stackoverflow.com/questions/6312993/javascript-seconds-to-time-string-with-format-hhmmss
 
 https://medium.com/javascript-in-plain-english/how-to-check-for-null-in-javascript-dffab64d8ed5
+
+https://stackoverflow.com/questions/34753782/how-to-chain-redirects-in-node-express
+
+https://www.w3schools.com/tags/tag_iframe.asp
+
+https://groups.google.com/forum/#!topic/strava-api/DjfRRWsPFuk
+
+https://www.w3docs.com/snippets/html/how-to-redirect-a-web-page-in-html.html
+
+https://stackoverflow.com/questions/18145273/how-to-load-an-external-webpage-into-a-div-of-a-html-page
+
+https://stackoverflow.com/questions/1655065/redirecting-to-a-relative-url-in-javascript
 
 */
