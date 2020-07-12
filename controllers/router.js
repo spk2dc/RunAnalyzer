@@ -24,6 +24,11 @@ router.use(methodOverride('_method'))
 
 //************************INDEX ROUTE**********************//
 router.get('/', (req, res) => {
+    access_token = ''
+    token_type = ''
+    refresh_token = ''
+    currentUserID = ''
+
     res.render('index.ejs');
 });
 //************************INDEX ROUTE**********************//
