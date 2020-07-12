@@ -148,13 +148,31 @@ router.delete('/delete/:id', (req, res) => {
     // console.log('req: ', req.query);
     const id = req.params.id.toString(10)
 
-    stravaUsers.deleteOne({ stravaID: id }, (err, foundUser) => {
+    //remove this user from the Mongo database
+    stravaUsers.deleteOne({ stravaID: id }, (err, deletedUser) => {
         if (err) {
             console.log('delete user error: ', err);
         }
-        console.log('deleted user: ', foundUser.firstname);
+        // console.log('deleted user: ', deletedUser);
     })
 
+    //deauthorize this application from the user's Strava Account
+    axios({
+        method: 'post',
+        url: 'https://www.strava.com/oauth/deauthorize',
+        data: {
+            access_token: access_token
+        }
+    })
+        .then((data) => {
+            // console.log(`deauthorized strava user: ${data.data}`, data.headers);
+
+        })
+        .catch((err) => {
+            console.log('axios deauthorize error', err);
+        })
+
+    //redirect back to home page
     res.redirect('/')
 
 })
