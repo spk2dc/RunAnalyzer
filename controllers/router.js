@@ -18,15 +18,18 @@ const stravaUsers = require('../models/stravaUsers.js')
 router.use(express.urlencoded({ extended: true }))
 router.use(methodOverride('_method'))
 
-////////////////////////////////////////////////////
-///////////////////// ROUTES //////////////////////
-//////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////
+//////////////////////// ALL ROUTES ///////////////////////////
+//////////////////////////////////////////////////////////////
 
+//************************INDEX ROUTE**********************//
 router.get('/', (req, res) => {
     res.render('index.ejs');
 });
+//************************INDEX ROUTE**********************//
 
-//prompt user to login
+//*************************NEW ROUTE**********************//
+//prompt new user to login using Strava API's login page with necessary scopes to read all of the user's public and private data
 router.get('/login', (req, res) => {
     let scope = 'read_all,profile:read_all,activity:read_all'
     let redirect = `http://${req.get('host')}/user_overview`
@@ -37,16 +40,21 @@ router.get('/login', (req, res) => {
 
     res.redirect(url);
 });
+//*************************NEW ROUTE**********************//
 
-//page redirected to after login page
+
+//************************CREATE ROUTE**********************//
+//login redirect page, create new user if they don't exist and then display user overview page
 router.get('/user_overview', (req, res) => {
     // console.log('token: ', access_token, 'curruser: ', currentUserID.length);
 
+    //if coming from login page and access token does not exist then get one
     if (req.query.hasOwnProperty('code') && access_token.length < 1) {
+        //call method to get access token and get returned promise
         let exchangePromise = tokenAuthentication(req.query.code)
         // console.log('exchangePromise: ', exchangePromise);
 
-        //when promise is complete then get authenticated token and basic user from the returned data
+        //when promise is complete then save access tokens and create basic user from the returned data
         exchangePromise.then((promiseData) => {
             // console.log('exchangePromise: ', promiseData.data);
 
@@ -56,7 +64,7 @@ router.get('/user_overview', (req, res) => {
             //id is returned as a number, convert to string
             currentUserID = promiseData.data.athlete.id.toString(10)
 
-            //find user in database and update or upsert if doesn't exist
+            //find user in database and update or upsert (create) if user doesn't exist. set data based on defined schema 
             const filter = { stravaID: currentUserID }
             const update = {
                 "$set": {
@@ -84,14 +92,21 @@ router.get('/user_overview', (req, res) => {
             console.log('login promise error', err);
         })
     } else if (currentUserID.length > 0) {
+        //if not redirecting from login page and if user also exists then find user and render their profile overview
         stravaUsers.find({ stravaID: currentUserID }, (err, athlete) => {
             // console.log('elseif find athlete: ', athlete);
             res.render('user_profile.ejs', { user: athlete[0] })
         })
+    } else {
+        //temporary catch all in case there is somehow a situation that does not fall into previous if statements
+        res.send('Something went wrong. Not redirecting from login page without an access token and current user does not exist.')
     }
 })
+//************************CREATE ROUTE**********************//
 
-//pull all activity data from Strava API and update user with it
+
+//************************UPDATE ROUTE**********************//
+//pull list of all activity data from Strava API and update user with it
 router.post('/refresh/:id', (req, res) => {
     // console.log('req: ', req.query);
 
@@ -120,8 +135,11 @@ router.post('/refresh/:id', (req, res) => {
         console.log('get all activities promise error', err);
     })
 })
+//**********************UPDATE ROUTE**********************//
 
-//show page for each activity
+
+//***********************SHOW ROUTE**********************//
+//show page for detailed data on each individual activity
 router.get('/activity/:id', (req, res) => {
     // console.log('req: ', req.query);
     const filter = { stravaID: currentUserID }
@@ -142,8 +160,11 @@ router.get('/activity/:id', (req, res) => {
         }
     })
 })
+//***********************SHOW ROUTE**********************//
 
-//delete user and logout
+
+//**********************DESTROY ROUTE**********************//
+//delete user and all of their data, then logout and deauthenticate this website's access to their account
 router.delete('/delete/:id', (req, res) => {
     // console.log('req: ', req.query);
     const id = req.params.id.toString(10)
@@ -176,15 +197,16 @@ router.delete('/delete/:id', (req, res) => {
     res.redirect('/')
 
 })
+//**********************DESTROY ROUTE**********************//
 
-////////////////////////////////////////////////////
-///////////////////// ROUTES //////////////////////
-//////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////
+//////////////////////// ALL ROUTES ///////////////////////////
+//////////////////////////////////////////////////////////////
 
 
-////////////////////////////////////////////////////
-//////////////////// METHODS //////////////////////
-//////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////
+///////////////////////// METHODS /////////////////////////////
+//////////////////////////////////////////////////////////////
 
 //upon successful login, request valid token from Strava API
 let tokenAuthentication = (code) => {

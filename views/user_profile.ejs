@@ -14,12 +14,24 @@
 </head>
 
 <body>
-    <h1><%= user.firstname %> <%= user.lastname %></h1>
-    <img src="<%= user.profile %>" alt="user picture">
-    <h3>Username: <%= user.username %></h3>
-    <h3>ID: <%= user.stravaID %></h3>
-    <h3>Location: <%= user.location %></h3>
-    <h3>Account Created: <%= user.created_at %></h3>
+    <div class="container text-center">
+        <h1 class="mx-auto d-block"><span class="font-weight-bold"><%= user.firstname %> <%= user.lastname %></span></h1>
+
+        <% let imgPath = '' %>
+        <% if(user.profile.split('/')[0] !== "avatar") { %>
+            <% imgPath = user.profile %>
+        <% } else { %>
+            <% imgPath = '/blank-user.jpg' %>
+        <% } %>
+        <img src="<%= imgPath %>" alt="user picture" class="img-thumbnail w-25 rounded mx-auto d-block">
+
+        <div class="container text-left" style="width: 470px;">
+            <h3 class="mx-auto d-block"><span class="font-weight-bold">Username: </span><%= user.username %></h3>
+            <h3 class="mx-auto d-block"><span class="font-weight-bold">ID: </span><%= user.stravaID %></h3>
+            <h3 class="mx-auto d-block"><span class="font-weight-bold">Location: </span><%= user.location %></h3>
+            <h3 class="mx-auto d-block"><span class="font-weight-bold">Account Created: </span><%= user.created_at %></h3>
+        </div>
+    </div>
 
     <form action="/" method="get">
         <button type="submit">Logout</button>
