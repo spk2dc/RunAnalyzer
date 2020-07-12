@@ -11,13 +11,15 @@
 
     <link rel="stylesheet" href="/css/style.css">
 
-    <title>Run Analyzer</title>
+    <title>Activity Note</title>
 </head>
 
 <body>
-    <h1>Run Analyzer (powered by Strava)</h1>
-    <form action="/login" method="get">
-        <button type="submit">Login</button>
+    <h1>Edit Custom Note</h1>
+    <form action="/activity/<%= activityID %>/note" method="post" id="noteForm">
+        <textarea name="customNote" id="customNote" cols="30" rows="10" form="noteForm" placeholder="Enter a custom note for this activity"></textarea>
+        <br>
+        <button type="submit" class="btn btn-success">Create Note</button>
     </form>
 
 

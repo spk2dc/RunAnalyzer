@@ -113,7 +113,54 @@ router.post('/refresh/:id', (req, res) => {
         console.log('get all activities promise error', err);
     })
 })
+
+//create a note for an individual activity
+router.post('/activity/:id/note', (req, res) => {
+    // console.log('req: ', req.body.customNote);
+    const filter = { stravaID: currentUserID }
+    const activityID = req.params.id.toString(10)
+
+    stravaUsers.findOne(filter, (err, foundUser) => {
+        if (err) {
+            console.log('activity note find error: ', err);
+        }
+        // console.log('updated user activity: ', foundUser.detailedActivities[activityID]);
+
+        //render page if activity id exists
+        if (foundUser.detailedActivities.hasOwnProperty(activityID)) {
+            foundUser.detailedActivities[activityID].customNote = req.body.customNote
+            res.render('custom_note.ejs', { user: foundUser, activityID: activityID })
+            // res.send(foundUser.detailedActivities[activityID])
+
+        }
+    })
+})
 //**********************UPDATE ROUTE**********************//
+
+
+//*************************EDIT ROUTE**********************//
+//edit page for a custom note for an individual activity
+router.get('/activity/:id/note', (req, res) => {
+    // console.log('req: ', req.body.customNote);
+    const filter = { stravaID: currentUserID }
+    const activityID = req.params.id.toString(10)
+
+    stravaUsers.findOne(filter, (err, foundUser) => {
+        if (err) {
+            console.log('activity note find error: ', err);
+        }
+        // console.log('updated user activity: ', foundUser.detailedActivities[activityID]);
+
+        //render page if activity id exists
+        if (foundUser.detailedActivities.hasOwnProperty(activityID)) {
+            foundUser.detailedActivities[activityID].customNote = req.body.customNote
+            res.render('custom_note.ejs', { user: foundUser, activityID: activityID })
+            // res.send(foundUser.detailedActivities[activityID])
+
+        }
+    })
+})
+//***********************EDIT ROUTE**********************//
 
 
 //***********************SHOW ROUTE**********************//
@@ -306,6 +353,8 @@ let getDetailedActivities = (token_type, access_token, user) => {
 
         for (let i = 0; i < results.length; i++) {
             let detailID = results[i].value.data.id
+            //add field for custom notes in each activity
+            results[i].value.data.customNote = ''
             user.detailedActivities[detailID] = results[i].value.data
         }
 
