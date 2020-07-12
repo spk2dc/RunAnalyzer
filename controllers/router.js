@@ -143,6 +143,22 @@ router.get('/activity/:id', (req, res) => {
     })
 })
 
+//delete user and logout
+router.delete('/delete/:id', (req, res) => {
+    // console.log('req: ', req.query);
+    const id = req.params.id.toString(10)
+
+    stravaUsers.deleteOne({ stravaID: id }, (err, foundUser) => {
+        if (err) {
+            console.log('delete user error: ', err);
+        }
+        console.log('deleted user: ', foundUser.firstname);
+    })
+
+    res.redirect('/')
+
+})
+
 ////////////////////////////////////////////////////
 ///////////////////// ROUTES //////////////////////
 //////////////////////////////////////////////////

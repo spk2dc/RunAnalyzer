@@ -29,6 +29,10 @@
         <button type="submit">Refresh Data</button>
     </form>
 
+    <form action="/delete/<%= user.stravaID %>?_method=DELETE" method="post">
+        <button type="submit">Delete Data (only from this site)</button>
+    </form>
+
     <table>
         <thead>
             <th>Name</th>
