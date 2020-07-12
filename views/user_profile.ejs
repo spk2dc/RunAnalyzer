@@ -37,19 +37,17 @@
         </div>
     </div>
 
-    <form action="/" method="get">
-        <button type="submit">Logout</button>
-    </form>
+    <div class="btn-group">
+        <form action="/refresh/<%= user.stravaID %>" method="post">
+            <button type="submit" class="btn btn-primary">Refresh Data</button>
+        </form>
 
-    <form action="/refresh/<%= user.stravaID %>" method="post">
-        <button type="submit">Refresh Data</button>
-    </form>
+        <form action="/" method="get">
+            <button type="submit" class="btn btn-warning">Logout</button>
+        </form>
+    </div>
 
-    <form action="/delete/<%= user.stravaID %>?_method=DELETE" method="post">
-        <button type="submit">Delete Data (only from this site)</button>
-    </form>
-
-    <table>
+    <table class="table table-striped table-md">
         <thead>
             <th>Name</th>
             <th>Date</th>
@@ -83,7 +81,9 @@
         </tbody>
     </table>
 
-
+    <form action="/delete/<%= user.stravaID %>?_method=DELETE" method="post">
+        <button type="submit" class="btn btn-danger btn-sm">Delete Data (only from this site)</button>
+    </form>
 
 
     <!-- Optional JavaScript -->
