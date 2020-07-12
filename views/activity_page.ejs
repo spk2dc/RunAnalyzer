@@ -42,7 +42,7 @@ let paceMinMI = new Date(1000 * paceSecMI).toISOString().substr(14, 5)
         <%= new Date(activity.start_date_local).toLocaleDateString('en-US', { year: 'numeric', month: '2-digit', day: '2-digit' }) %>
     </h3>
     <h3>Start Time:
-        <%= new Date(activity.start_date_local).toLocaleTimeString('en-US', { year: 'numeric', month: '2-digit', day: '2-digit' }) %>
+        <%= new Date(activity.start_date_local).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit' }) %>
     </h3>
     <h3>Activity Type: <%= activity.type %></h3>
     <h3>Total Time: <%= total_time %></h3>
