@@ -59,52 +59,25 @@ router.get('/user_overview', (req, res) => {
         let exchangePromise = tokenAuthentication(req.query.code)
         // console.log('exchangePromise: ', exchangePromise);
 
-        //when promise is complete then save access tokens and create basic user from the returned data
         exchangePromise.then((promiseData) => {
             // console.log('exchangePromise: ', promiseData.data);
-
-            access_token = promiseData.data.access_token
-            token_type = promiseData.data.token_type
-            refresh_token = promiseData.data.refresh_token
-            //id is returned as a number, convert to string
-            currentUserID = promiseData.data.athlete.id.toString(10)
-
-            //find user in database and update or upsert (create) if user doesn't exist. set data based on defined schema 
-            const filter = { stravaID: currentUserID }
-            const update = {
-                "$set": {
-                    stravaID: currentUserID,
-                    firstname: promiseData.data.athlete.firstname,
-                    lastname: promiseData.data.athlete.lastname,
-                    username: promiseData.data.athlete.username,
-                    location: `${promiseData.data.athlete.city}, ${promiseData.data.athlete.state}`,
-                    created_at: promiseData.data.athlete.created_at,
-                    profile: promiseData.data.athlete.profile,
-                }
-            }
-            const options = { new: true, upsert: true }
-
-            stravaUsers.findOneAndUpdate(filter, update, options, (err, foundUser) => {
-                if (err) {
-                    console.log('create athlete error: ', err);
-                }
-                // console.log('create athlete: ', foundUser);
-                res.render('user_profile.ejs', { user: foundUser })
-
-            })
+            
+            //send in promise data to create user and send in response to render user overview page once they are created
+            createUser(promiseData, res)
 
         }).catch((err) => {
             console.log('login promise error', err);
         })
+
     } else if (currentUserID.length > 0) {
-        //if not redirecting from login page and if user also exists then find user and render their profile overview
+        //if not redirecting from another page and if user also exists then find user and render their profile overview
         stravaUsers.find({ stravaID: currentUserID }, (err, athlete) => {
             // console.log('elseif find athlete: ', athlete);
             res.render('user_profile.ejs', { user: athlete[0] })
         })
     } else {
         //temporary catch all in case there is somehow a situation that does not fall into previous if statements
-        res.send('Something went wrong. Not redirecting from login page without an access token and current user does not exist.')
+        res.send('Something went wrong. Either you have not logged in or your access token has expired and you need to log in again.')
     }
 })
 //************************CREATE ROUTE**********************//
@@ -214,7 +187,7 @@ router.get('/logout', (req, res) => {
     res.render('logout.ejs', { baseurl: baseurl })
 
 })
-//**********************DESTROY ROUTE**********************//
+//**********************LOGOUT ROUTE**********************//
 
 ////////////////////////////////////////////////////////////////
 //////////////////////// ALL ROUTES ///////////////////////////
@@ -241,6 +214,39 @@ let tokenAuthentication = (code) => {
         }
     }).catch((err) => {
         console.log('axios token authentication error', err);
+    })
+}
+
+//when token authentication promise is complete then save access tokens and create basic user from the returned data
+let createUser = (promiseData, res) => {
+
+    access_token = promiseData.data.access_token
+    token_type = promiseData.data.token_type
+    refresh_token = promiseData.data.refresh_token
+    //id is returned as a number, convert to string
+    currentUserID = promiseData.data.athlete.id.toString(10)
+
+    //find user in database and update or upsert (create) if user doesn't exist. set data based on defined schema 
+    const filter = { stravaID: currentUserID }
+    const update = {
+        "$set": {
+            stravaID: currentUserID,
+            firstname: promiseData.data.athlete.firstname,
+            lastname: promiseData.data.athlete.lastname,
+            username: promiseData.data.athlete.username,
+            location: `${promiseData.data.athlete.city}, ${promiseData.data.athlete.state}`,
+            created_at: promiseData.data.athlete.created_at,
+            profile: promiseData.data.athlete.profile,
+        }
+    }
+    const options = { new: true, upsert: true }
+
+    stravaUsers.findOneAndUpdate(filter, update, options, (err, foundUser) => {
+        if (err) {
+            console.log('create athlete error: ', err);
+        }
+        // console.log('create athlete: ', foundUser);
+        res.render('user_profile.ejs', { user: foundUser })
     })
 }
 
