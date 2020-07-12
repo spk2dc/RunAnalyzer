@@ -15,6 +15,7 @@
 
 <body>
     <div class="container text-center">
+        <br>
         <h1 class="mx-auto d-block"><span class="font-weight-bold"><%= user.firstname %> <%= user.lastname %></span></h1>
 
         <% let imgPath = '' %>
@@ -25,7 +26,7 @@
         <% } %>
         <img src="<%= imgPath %>" alt="user picture" class="img-thumbnail w-25 rounded mx-auto d-block">
 
-        <div class="container text-left" style="width: 470px;">
+        <div class="container text-left" style="width: 430px;">
             <% let username = 'None' %>
             <% if(user.username != null) { %>
                 <% username = user.username %>
@@ -33,57 +34,65 @@
             <h3 class="mx-auto d-block"><span class="font-weight-bold">Username: </span><%= username %></h3>
             <h3 class="mx-auto d-block"><span class="font-weight-bold">ID: </span><%= user.stravaID %></h3>
             <h3 class="mx-auto d-block"><span class="font-weight-bold">Location: </span><%= user.location %></h3>
-            <h3 class="mx-auto d-block"><span class="font-weight-bold">Account Created: </span><%= user.created_at %></h3>
+            <h3 class="mx-auto d-block"><span class="font-weight-bold">Account Created: </span><%= new Date(user.created_at).toLocaleDateString('en-US', { year: 'numeric', month: '2-digit', day: '2-digit' }) %></h3>
+        </div>
+        
+        <br>
+        <div class="">
+            <form action="/refresh/<%= user.stravaID %>" method="post" style="display: inline-block;">
+                <button type="submit" class="btn btn-primary">Refresh Data</button>
+            </form>
+
+            <form action="/" method="get" style="display: inline-block;">
+                <button type="submit" class="btn btn-warning">Logout</button>
+            </form>
         </div>
     </div>
 
-    <div class="btn-group">
-        <form action="/refresh/<%= user.stravaID %>" method="post">
-            <button type="submit" class="btn btn-primary">Refresh Data</button>
-        </form>
-
-        <form action="/" method="get">
-            <button type="submit" class="btn btn-warning">Logout</button>
-        </form>
-    </div>
-
-    <table class="table table-striped table-md">
-        <thead>
-            <th>Name</th>
-            <th>Date</th>
-            <th>Start Time</th>
-            <th>Activity Type</th>
-            <th>Distance (km)</th>
-            <th>Distance (mi)</th>
-            <th>Moving Time</th>
-            <th>Elapsed Time</th>
-            <th>Average Speed (m/s)</th>
-            <th>Max Speed (m/s)</th>
-        </thead>
-        <tbody>
-            <% if (typeof user.allActivities !== 'undefined') { %>
-                <% for(let i=0; i < user.allActivities.length; i++) { %>
-                    <% let fullDate = new Date(user.allActivities[i].start_date_local) %>
-                <tr>
-                    <td><a href="/activity/<%= user.allActivities[i].id %>"><%= user.allActivities[i].name %></a></td>
-                    <td><%= fullDate.toLocaleDateString('en-US', { year: 'numeric', month: '2-digit', day: '2-digit' }) %></td>
-                    <td><%= fullDate.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit' }) %></td>
-                    <td><%= user.allActivities[i].type %></td>
-                    <td><%= (user.allActivities[i].distance/1000).toFixed(2) %></td>
-                    <td><%= (user.allActivities[i].distance/1000*0.621371).toFixed(2) %></td>
-                    <td><%= new Date(1000 * user.allActivities[i].moving_time).toISOString().substr(11, 8) %></td>
-                    <td><%= new Date(1000 * user.allActivities[i].elapsed_time).toISOString().substr(11, 8) %></td>
-                    <td><%= user.allActivities[i].average_speed %></td>
-                    <td><%= user.allActivities[i].max_speed %></td>
-                </tr>
+    <div class="container-lg">
+        <br>
+        <h3>All Activities</h3>
+        <table class="table table-striped table-md">
+            <thead>
+                <th>Name</th>
+                <th>Date</th>
+                <th>Start Time</th>
+                <th>Activity Type</th>
+                <th>Distance (km)</th>
+                <th>Distance (mi)</th>
+                <th>Moving Time</th>
+                <th>Elapsed Time</th>
+                <th>Average Speed (m/s)</th>
+                <th>Max Speed (m/s)</th>
+            </thead>
+            <tbody>
+                <% if (typeof user.allActivities !== 'undefined') { %>
+                    <% for(let i=0; i < user.allActivities.length; i++) { %>
+                        <% let fullDate = new Date(user.allActivities[i].start_date_local) %>
+                    <tr>
+                        <td><a href="/activity/<%= user.allActivities[i].id %>" class="btn btn-info"><%= user.allActivities[i].name %></a></td>
+                        <td><%= fullDate.toLocaleDateString('en-US', { year: 'numeric', month: '2-digit', day: '2-digit' }) %></td>
+                        <td><%= fullDate.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit' }) %></td>
+                        <td><%= user.allActivities[i].type %></td>
+                        <td><%= (user.allActivities[i].distance/1000).toFixed(2) %></td>
+                        <td><%= (user.allActivities[i].distance/1000*0.621371).toFixed(2) %></td>
+                        <td><%= new Date(1000 * user.allActivities[i].moving_time).toISOString().substr(11, 8) %></td>
+                        <td><%= new Date(1000 * user.allActivities[i].elapsed_time).toISOString().substr(11, 8) %></td>
+                        <td><%= user.allActivities[i].average_speed %></td>
+                        <td><%= user.allActivities[i].max_speed %></td>
+                    </tr>
+                    <% } %>
                 <% } %>
-            <% } %>
-        </tbody>
-    </table>
+            </tbody>
+        </table>
 
-    <form action="/delete/<%= user.stravaID %>?_method=DELETE" method="post">
-        <button type="submit" class="btn btn-danger btn-sm">Delete Data (only from this site)</button>
-    </form>
+        <br>
+        <form action="/delete/<%= user.stravaID %>?_method=DELETE" method="post">
+            <button type="submit" class="btn btn-danger btn-sm">Delete Data (only from this site)</button>
+        </form>
+        <br>
+        <br>
+    </div>
 
 
     <!-- Optional JavaScript -->
