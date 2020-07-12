@@ -317,4 +317,6 @@ https://mongoosejs.com/docs/api.html
 
 https://stackoverflow.com/questions/6312993/javascript-seconds-to-time-string-with-format-hhmmss
 
+https://medium.com/javascript-in-plain-english/how-to-check-for-null-in-javascript-dffab64d8ed5
+
 */
