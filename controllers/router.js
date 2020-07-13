@@ -61,7 +61,7 @@ router.get('/user_overview', (req, res) => {
 
         exchangePromise.then((promiseData) => {
             // console.log('exchangePromise: ', promiseData.data);
-            
+
             //send in promise data to create user and send in response to render user overview page once they are created
             createUser(promiseData, res)
 
@@ -122,14 +122,17 @@ router.post('/activity/:id/note', (req, res) => {
 
     stravaUsers.findOne(filter, (err, foundUser) => {
         if (err) {
-            console.log('activity note find error: ', err);
+            console.log('activity note update error: ', err);
         }
-        // console.log('updated user activity: ', foundUser.detailedActivities[activityID]);
+        console.log('updated user note: ', filter);
 
         //render page if activity id exists
         if (foundUser.detailedActivities.hasOwnProperty(activityID)) {
+            console.log('pre edited note: ', foundUser.detailedActivities[activityID].customNote);
             foundUser.detailedActivities[activityID].customNote = req.body.customNote
-            res.render('custom_note.ejs', { user: foundUser, activityID: activityID })
+            foundUser.save()
+            console.log('edited note: ', foundUser.detailedActivities[activityID].customNote);
+            res.redirect(`/activity/${activityID}`)
             // res.send(foundUser.detailedActivities[activityID])
 
         }
@@ -138,7 +141,7 @@ router.post('/activity/:id/note', (req, res) => {
 //**********************UPDATE ROUTE**********************//
 
 
-//*************************EDIT ROUTE**********************//
+//***********************EDIT ROUTE**********************//
 //edit page for a custom note for an individual activity
 router.get('/activity/:id/note', (req, res) => {
     // console.log('req: ', req.body.customNote);
@@ -147,13 +150,12 @@ router.get('/activity/:id/note', (req, res) => {
 
     stravaUsers.findOne(filter, (err, foundUser) => {
         if (err) {
-            console.log('activity note find error: ', err);
+            console.log('activity note edit error: ', err);
         }
-        // console.log('updated user activity: ', foundUser.detailedActivities[activityID]);
+        console.log('edit user note: ', foundUser);
 
         //render page if activity id exists
         if (foundUser.detailedActivities.hasOwnProperty(activityID)) {
-            foundUser.detailedActivities[activityID].customNote = req.body.customNote
             res.render('custom_note.ejs', { user: foundUser, activityID: activityID })
             // res.send(foundUser.detailedActivities[activityID])
 
@@ -354,7 +356,7 @@ let getDetailedActivities = (token_type, access_token, user) => {
         for (let i = 0; i < results.length; i++) {
             let detailID = results[i].value.data.id
             //add field for custom notes in each activity
-            results[i].value.data.customNote = ''
+            results[i].value.data.customNote = ' '
             user.detailedActivities[detailID] = results[i].value.data
         }
 
