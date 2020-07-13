@@ -29,7 +29,7 @@ router.get('/', (req, res) => {
         req.session.currentUserID = ''
     }
 
-    console.log('req session: ', req.session);
+    // console.log('req session: ', req.session);
 
     res.render('index.ejs');
 });
@@ -414,5 +414,7 @@ https://stackoverflow.com/questions/18145273/how-to-load-an-external-webpage-int
 https://stackoverflow.com/questions/1655065/redirecting-to-a-relative-url-in-javascript
 
 https://stackoverflow.com/questions/35733647/mongoose-instance-save-not-working
+
+https://www.w3schools.com/bootstrap/bootstrap_tabs_pills.asp
 
 */
