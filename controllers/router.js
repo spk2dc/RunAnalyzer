@@ -21,10 +21,14 @@ router.use(methodOverride('_method'))
 
 //************************INDEX ROUTE**********************//
 router.get('/', (req, res) => {
-    req.session.access_token = ''
-    req.session.token_type = ''
-    req.session.refresh_token = ''
-    req.session.currentUserID = ''
+    //if session does not exist set default values
+    if (!req.session.hasOwnProperty('access_token')) {
+        req.session.access_token = ''
+        req.session.token_type = ''
+        req.session.refresh_token = ''
+        req.session.currentUserID = ''
+    }
+
     console.log('req session: ', req.session);
 
     res.render('index.ejs');
@@ -231,8 +235,12 @@ router.delete('/delete/:id', (req, res) => {
 router.get('/logout', (req, res) => {
     let baseurl = req.get('host')
 
-    //redirect back to home page
-    res.render('logout.ejs', { baseurl: baseurl })
+    //destroy user's session on logout
+    req.session.destroy(() => {
+        //redirect back to home page
+        res.render('logout.ejs', { baseurl: baseurl })
+    })
+
 
 })
 //**********************LOGOUT ROUTE**********************//
