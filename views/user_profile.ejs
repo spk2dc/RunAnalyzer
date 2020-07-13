@@ -49,7 +49,7 @@
         </div>
     </div>
 
-    <div class="container-lg">
+    <div class="container-lg text-center">
         <br>
         <h3>All Activities</h3>
         <table class="table table-striped table-md">
@@ -87,9 +87,11 @@
         </table>
 
         <br>
-        <form action="/delete/<%= user.stravaID %>?_method=DELETE" method="post">
-            <button type="submit" class="btn btn-danger btn-sm">Delete Data (only from this site)</button>
-        </form>
+        <div class="container-sm text-center">
+            <form action="/delete/<%= user.stravaID %>?_method=DELETE" method="post">
+                <button type="submit" class="btn btn-danger btn-sm">Delete Data (only from this site)</button>
+            </form>
+        </div>
         <br>
         <br>
     </div>

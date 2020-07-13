@@ -124,14 +124,15 @@ router.post('/activity/:id/note', (req, res) => {
         if (err) {
             console.log('activity note update error: ', err);
         }
-        console.log('updated user note: ', filter);
+        // console.log('updated user note: ', filter);
 
         //render page if activity id exists
         if (foundUser.detailedActivities.hasOwnProperty(activityID)) {
-            console.log('pre edited note: ', foundUser.detailedActivities[activityID].customNote);
             foundUser.detailedActivities[activityID].customNote = req.body.customNote
+            //have to mark document's specific key that was modified in order for changes to be saved to database
+            foundUser.markModified('detailedActivities')
             foundUser.save()
-            console.log('edited note: ', foundUser.detailedActivities[activityID].customNote);
+
             res.redirect(`/activity/${activityID}`)
             // res.send(foundUser.detailedActivities[activityID])
 
@@ -152,7 +153,7 @@ router.get('/activity/:id/note', (req, res) => {
         if (err) {
             console.log('activity note edit error: ', err);
         }
-        console.log('edit user note: ', foundUser);
+        // console.log('edit user note: ', foundUser);
 
         //render page if activity id exists
         if (foundUser.detailedActivities.hasOwnProperty(activityID)) {
@@ -356,7 +357,7 @@ let getDetailedActivities = (token_type, access_token, user) => {
         for (let i = 0; i < results.length; i++) {
             let detailID = results[i].value.data.id
             //add field for custom notes in each activity
-            results[i].value.data.customNote = ' '
+            results[i].value.data.customNote = ''
             user.detailedActivities[detailID] = results[i].value.data
         }
 
@@ -404,5 +405,7 @@ https://www.w3docs.com/snippets/html/how-to-redirect-a-web-page-in-html.html
 https://stackoverflow.com/questions/18145273/how-to-load-an-external-webpage-into-a-div-of-a-html-page
 
 https://stackoverflow.com/questions/1655065/redirecting-to-a-relative-url-in-javascript
+
+https://stackoverflow.com/questions/35733647/mongoose-instance-save-not-working
 
 */
