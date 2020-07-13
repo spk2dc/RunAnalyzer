@@ -4,6 +4,7 @@
 const express = require('express');
 const methodOverride = require('method-override');
 const mongoose = require('mongoose');
+const session = require('express-session')
 const app = express();
 const db = mongoose.connection;
 require('dotenv').config()
@@ -44,8 +45,17 @@ app.use(express.json());// returns middleware that only parses JSON - may or may
 //use method override
 app.use(methodOverride('_method'));// allow POST, PUT and DELETE from a form
 
+//for using CSS in public folder
 app.use(express.static('public')); //tells express to try to match requests with files in the directory called 'public' for CSS files
 
+//for saving sessions and their variables in express
+app.use(
+    session({
+        resave: false, // default more info: https://www.npmjs.com/package/express-session#resave
+        saveUninitialized: false, // default  more info: https://www.npmjs.com/package/express-session#resave
+        secret: process.env.CLIENT_SECRET, //must be set otherwise warnings will show up
+    })
+)
 
 //___________________
 // Routes

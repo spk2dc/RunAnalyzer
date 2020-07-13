@@ -5,12 +5,8 @@ const router = express.Router();
 require('dotenv').config()
 const axios = require('axios').default;
 
-const CLIENT_ID = process.env.CLIENT_ID
-const CLIENT_SECRET = process.env.CLIENT_SECRET
-let access_token = ''
-let token_type = ''
-let refresh_token = ''
-let currentUserID = ''
+let CLIENT_ID = process.env.CLIENT_ID
+let CLIENT_SECRET = process.env.CLIENT_SECRET
 
 //database schema
 const stravaUsers = require('../models/stravaUsers.js')
@@ -18,16 +14,18 @@ const stravaUsers = require('../models/stravaUsers.js')
 router.use(express.urlencoded({ extended: true }))
 router.use(methodOverride('_method'))
 
+
 ////////////////////////////////////////////////////////////////
 //////////////////////// ALL ROUTES ///////////////////////////
 //////////////////////////////////////////////////////////////
 
 //************************INDEX ROUTE**********************//
 router.get('/', (req, res) => {
-    access_token = ''
-    token_type = ''
-    refresh_token = ''
-    currentUserID = ''
+    req.session.access_token = ''
+    req.session.token_type = ''
+    req.session.refresh_token = ''
+    req.session.currentUserID = ''
+    console.log('req session: ', req.session);
 
     res.render('index.ejs');
 });
@@ -51,10 +49,10 @@ router.get('/login', (req, res) => {
 //************************CREATE ROUTE**********************//
 //login redirect page, create new user if they don't exist and then display user overview page
 router.get('/user_overview', (req, res) => {
-    // console.log('token: ', access_token, 'curruser: ', currentUserID.length);
+    // console.log('token: ', req.session.access_token, 'curruser: ', req.session.currentUserID.length);
 
     //if coming from login page and access token does not exist then get one
-    if (req.query.hasOwnProperty('code') && access_token.length < 1) {
+    if (req.query.hasOwnProperty('code') && req.session.access_token.length < 1) {
         //call method to get access token and get returned promise
         let exchangePromise = tokenAuthentication(req.query.code)
         // console.log('exchangePromise: ', exchangePromise);
@@ -62,16 +60,16 @@ router.get('/user_overview', (req, res) => {
         exchangePromise.then((promiseData) => {
             // console.log('exchangePromise: ', promiseData.data);
 
-            //send in promise data to create user and send in response to render user overview page once they are created
-            createUser(promiseData, res)
+            //send in promise data to create user, request to pass session info, and response to render user overview page once they are created
+            createUser(promiseData, req, res)
 
         }).catch((err) => {
             console.log('login promise error', err);
         })
 
-    } else if (currentUserID.length > 0) {
+    } else if (req.session.currentUserID.length > 0) {
         //if not redirecting from another page and if user also exists then find user and render their profile overview
-        stravaUsers.find({ stravaID: currentUserID }, (err, athlete) => {
+        stravaUsers.find({ stravaID: req.session.currentUserID }, (err, athlete) => {
             // console.log('elseif find athlete: ', athlete);
             res.render('user_profile.ejs', { user: athlete[0] })
         })
@@ -88,7 +86,7 @@ router.get('/user_overview', (req, res) => {
 router.post('/refresh/:id', (req, res) => {
     // console.log('req: ', req.query);
 
-    getAllActivities(token_type, access_token).then((activities) => {
+    getAllActivities(req.session.token_type, req.session.access_token).then((activities) => {
         const filter = { stravaID: req.params.id }
         const update = {
             $set: {
@@ -104,7 +102,7 @@ router.post('/refresh/:id', (req, res) => {
                 console.log('all activities error: ', err);
             }
             // console.log('updated user: ', foundUser);
-            getDetailedActivities(token_type, access_token, foundUser)
+            getDetailedActivities(req.session.token_type, req.session.access_token, foundUser)
         })
 
         res.redirect('/user_overview')
@@ -117,7 +115,7 @@ router.post('/refresh/:id', (req, res) => {
 //create a note for an individual activity
 router.post('/activity/:id/note', (req, res) => {
     // console.log('req: ', req.body.customNote);
-    const filter = { stravaID: currentUserID }
+    const filter = { stravaID: req.session.currentUserID }
     const activityID = req.params.id.toString(10)
 
     stravaUsers.findOne(filter, (err, foundUser) => {
@@ -146,7 +144,7 @@ router.post('/activity/:id/note', (req, res) => {
 //edit page for a custom note for an individual activity
 router.get('/activity/:id/note', (req, res) => {
     // console.log('req: ', req.body.customNote);
-    const filter = { stravaID: currentUserID }
+    const filter = { stravaID: req.session.currentUserID }
     const activityID = req.params.id.toString(10)
 
     stravaUsers.findOne(filter, (err, foundUser) => {
@@ -170,7 +168,7 @@ router.get('/activity/:id/note', (req, res) => {
 //show page for detailed data on each individual activity
 router.get('/activity/:id', (req, res) => {
     // console.log('req: ', req.query);
-    const filter = { stravaID: currentUserID }
+    const filter = { stravaID: req.session.currentUserID }
     const options = { new: true }
     const activityID = req.params.id.toString(10)
 
@@ -210,7 +208,7 @@ router.delete('/delete/:id', (req, res) => {
         method: 'post',
         url: 'https://www.strava.com/oauth/deauthorize',
         data: {
-            access_token: access_token
+            access_token: req.session.access_token
         }
     })
         .then((data) => {
@@ -268,19 +266,20 @@ let tokenAuthentication = (code) => {
 }
 
 //when token authentication promise is complete then save access tokens and create basic user from the returned data
-let createUser = (promiseData, res) => {
+let createUser = (promiseData, req, res) => {
 
-    access_token = promiseData.data.access_token
-    token_type = promiseData.data.token_type
-    refresh_token = promiseData.data.refresh_token
+    req.session.access_token = promiseData.data.access_token
+    req.session.token_type = promiseData.data.token_type
+    req.session.refresh_token = promiseData.data.refresh_token
     //id is returned as a number, convert to string
-    currentUserID = promiseData.data.athlete.id.toString(10)
+    req.session.currentUserID = promiseData.data.athlete.id.toString(10)
+    // console.log('req user: ', req.session.currentUserID);
 
     //find user in database and update or upsert (create) if user doesn't exist. set data based on defined schema 
-    const filter = { stravaID: currentUserID }
+    const filter = { stravaID: req.session.currentUserID }
     const update = {
         "$set": {
-            stravaID: currentUserID,
+            stravaID: req.session.currentUserID,
             firstname: promiseData.data.athlete.firstname,
             lastname: promiseData.data.athlete.lastname,
             username: promiseData.data.athlete.username,
