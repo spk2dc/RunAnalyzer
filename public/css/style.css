@@ -24,3 +24,20 @@ button, a.btn {
 nav {
     background-color: #fc5200;
 }
+
+.navbar-brand {
+    font-size: 1.75rem;
+}
+
+nav .border {
+    border-color: black!important;
+}
+
+.navbar-light .navbar-nav .nav-link:hover {
+    color: rgba(0,0,0,1);
+}
+
+#user-img {
+    width: 200px;
+    vertical-align: text-bottom;
+}

@@ -139,7 +139,7 @@ let paceMinMI = new Date(1000 * paceSecMI).toISOString().substr(14, 5)
     <script>
         $(()=>{
             $('#stravaLink').attr('href', 'https://www.strava.com/activities/<%= activity.id %>')
-            $('#stravaLink').toggleClass('disabled')
+            $('#stravaLink').removeClass('disabled')
         })
     </script>
 </body>

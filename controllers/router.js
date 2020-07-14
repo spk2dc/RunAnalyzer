@@ -305,6 +305,12 @@ let createUser = (promiseData, req, res) => {
         // console.log('create athlete: ', foundUser);
         res.render('user_profile.ejs', { user: foundUser })
     })
+
+    $(() => {
+        console.log('btn click: ', $('#btn-refresh'));
+        
+        $('#btn-refresh').click()
+    })
 }
 
 //get all the user's activities

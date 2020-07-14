@@ -9,9 +9,10 @@
 </head>
 
 <body>
+    <%- include ('./partials/sticky_nav.ejs') %>
     
     <div id="user-overview-div" class="container rounded border my-3 py-2">
-        <div class="d-inline-block" style="width: 200px; vertical-align: top;">
+        <div id="user-img" class="d-inline-block">
             <% let imgPath = '' %>
             <% if(user.profile.split('/')[0] !== "avatar") { %>
                 <% imgPath = user.profile %>
@@ -32,17 +33,7 @@
             <h3 class="mx-auto"><span class="font-weight-bold">Location: </span><%= user.location %></h3>
             <h3 class="mx-auto"><span class="font-weight-bold">Account Created: </span><%= new Date(user.created_at).toLocaleDateString('en-US', { year: 'numeric', month: '2-digit', day: '2-digit' }) %></h3>
         </div>
-        
         <br>
-        <div class="">
-            <form action="/refresh/<%= user.stravaID %>" method="post" style="display: inline-block;">
-                <button type="submit" class="btn btn-primary">Refresh Data</button>
-            </form>
-
-            <form action="/logout" method="get" style="display: inline-block;">
-                <button type="submit" class="btn btn-warning">Logout</button>
-            </form>
-        </div>
     </div>
 
     <div id="user-overview-div-table" class="container-lg rounded overflow-auto text-center border my-2 py-2">
@@ -86,13 +77,23 @@
         
     </div>
 
+    <br>
     <form action="/delete/<%= user.stravaID %>?_method=DELETE" method="post" class="container-sm text-center">
-        <button type="submit" class="btn btn-danger btn-sm">Delete Data (only from this site)</button>
+        <button type="submit" class="btn btn-danger btn">Delete All Data<br>(only from this site)</button>
     </form>
     <br>
     <br>
 
     <%- include ('./partials/bootstrap_scripts.ejs') %>
+
+
+    
+    <script>
+        $(()=>{
+            $('#stravaLink').attr('href', 'https://www.strava.com/athletes/<%= user.stravaID %>')
+            $('#stravaLink').removeClass('disabled')
+        })
+    </script>
 </body>
 
 </html>
