@@ -21,6 +21,18 @@
     
 
     <%- include ('./partials/bootstrap_scripts.ejs') %>
+
+    <script>
+        $(()=>{
+            //set link for back to activity navigation and display it
+            $('#backActivity').attr('href', '/activity/<%= activityID %>')
+            $('#backActivity').removeClass('disabled')
+            $('#backActivity').removeClass('d-none')
+            
+            //remove view in strava link
+            $('#stravaLink').addClass('d-none')
+        })
+    </script>
 </body>
 
 </html>

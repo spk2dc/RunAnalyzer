@@ -13,6 +13,9 @@
             <li class="nav-item">
                 <a id="stravaLink" class="nav-link disabled" href="#" target="_blank">View in Strava</a>
             </li>
+            <li class="nav-item">
+                <a id="backActivity" class="nav-link disabled d-none" href="#">Back to Activity</a>
+            </li>
         </ul>
         <form class="form-inline my-2 mx-2 my-lg-0" action="/refresh/<%= user.stravaID %>" method="post">
             <button id="btn-refresh" class="btn btn-success my-2 my-sm-0" type="submit">Refresh All Data</button>

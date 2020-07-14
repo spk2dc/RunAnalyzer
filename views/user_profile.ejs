@@ -57,7 +57,7 @@
                     <% for(let i=0; i < user.allActivities.length; i++) { %>
                         <% let fullDate = new Date(user.allActivities[i].start_date_local) %>
                     <tr>
-                        <td><a href="/activity/<%= user.allActivities[i].id %>" class="btn btn-info"><%= user.allActivities[i].name %></a></td>
+                        <td><a href="/activity/<%= user.allActivities[i].id %>" class="btn btn-info w-100"><%= user.allActivities[i].name %></a></td>
                         <td><%= fullDate.toLocaleDateString('en-US', { year: 'numeric', month: '2-digit', day: '2-digit' }) %></td>
                         <td><%= fullDate.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit' }) %></td>
                         <td><%= user.allActivities[i].type %></td>
