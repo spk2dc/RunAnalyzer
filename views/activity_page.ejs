@@ -26,28 +26,37 @@ let paceMinMI = new Date(1000 * paceSecMI).toISOString().substr(14, 5)
 
 <body>
     <%- include ('./partials/sticky_nav.ejs') %>
-    
-    <h1><%= activity.name %></h1>
-    
+        
     <br>
-    <h3>Date:
-        <%= new Date(activity.start_date_local).toLocaleDateString('en-US', { year: 'numeric', month: '2-digit', day: '2-digit' }) %>
-    </h3>
-    <h3>Start Time:
-        <%= new Date(activity.start_date_local).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit' }) %>
-    </h3>
-    <h3>Activity Type: <%= activity.type %></h3>
-    <h3>Total Time: <%= total_time %></h3>
-    <h3>Moving Time: <%= moving_time %></h3>
-    <h3>Average Speed (m/s): <%= activity.average_speed %></h3>
-    <h3>Max Speed (m/s): <%= activity.max_speed %></h3>
-    <h3>Elevation Gain (m): <%= activity.total_elevation_gain %></h3>
-    <h3>Custom Note: <%= activity.customNote %></h3>
-    <form action="/activity/<%= activityID %>/note" method="get">
-        <button type="submit" class="btn btn-success">Edit Custom Note</button>
-    </form>
+    <div class="container rounded my-3 py-3 text-center">
+        <h1 class="mx-2 text-center font-weight-bold border-bottom"><%= activity.name %></h1>
+        
+        <h3>
+            <span class="font-weight-bold">Activity Type:</span>
+            <%= activity.type %>
+        </h3>
+        
+        <h3 class="d-inline-block">
+            <span class="font-weight-bold">Date:</span>
+            <%= new Date(activity.start_date_local).toLocaleDateString('en-US', { year: 'numeric', month: '2-digit', day: '2-digit' }) %>,
+            <span class="font-weight-bold">Start Time:</span>
+            <%= new Date(activity.start_date_local).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit' }) %>
+        </h3>
 
-    <br>
+        <h3><span class="font-weight-bold">Custom Note: </span><%= activity.customNote %></h3>
+        <form action="/activity/<%= activityID %>/note" method="get">
+            <button type="submit" class="btn btn-success">Edit Custom Note</button>
+        </form>
+
+        <div id="activity-overall-details" class="container rounded my-3 py-3 text-left">
+            <h5><span class="font-weight-bold">Total Time: </span><%= total_time %></h5>
+            <h5><span class="font-weight-bold">Moving Time: </span><%= moving_time %></h5>
+            <h5><span class="font-weight-bold">Average Speed (m/s): </span><%= activity.average_speed %></h5>
+            <h5><span class="font-weight-bold">Max Speed (m/s): </span><%= activity.max_speed %></h5>
+            <h5><span class="font-weight-bold">Elevation Gain (m): </span><%= activity.total_elevation_gain %></h5>        
+        </div>
+    </div>
+
 
     <div class="container rounded my-3 py-3">
         <ul class="nav nav-tabs">
@@ -57,10 +66,10 @@ let paceMinMI = new Date(1000 * paceSecMI).toISOString().substr(14, 5)
         
         <div class="tab-content">
             <div id="metric" class="tab-pane fade in active show">
-                <h3>Metric Data</h3>
-                <h3>KMs: <%= km.toFixed(2) %></h3>
-                <h3>Pace (min/km): <%= paceMinKM %></h3>
-                <h3>Splits</h3>
+                <h3 class="my-3"><span class="font-weight-bold border-bottom">Metric Data<span class="font-weight-bold"></h3>
+                <h5><span class="font-weight-bold">KMs: </span><%= km.toFixed(2) %></h5>
+                <h5><span class="font-weight-bold">Pace (min/km): </span><%= paceMinKM %></h5>
+                <h5 class="text-center my-2"><span class="font-weight-bold">Splits</span></h5>
                 <table class="table table-striped table-sm border">
                     <thead>
                         <th>KMs #</th>
@@ -69,7 +78,7 @@ let paceMinMI = new Date(1000 * paceSecMI).toISOString().substr(14, 5)
                         <th>Elevation (m)</th>
                     </thead>
                     <tbody>
-                        <% for(const split of activity.splits_standard) { %>
+                        <% for(const split of activity.splits_metric) { %>
                             <%
                             let splitKM = split.distance/1000
                             let splitPaceSecKM = split.moving_time/splitKM
@@ -77,12 +86,13 @@ let paceMinMI = new Date(1000 * paceSecMI).toISOString().substr(14, 5)
                             %>
 
                             <tr>
-                                <td><% if(Math.round(splitKM) != 1) { %>
+                                <td>
+                                    <% if(Math.abs(1-splitKM) > 0.1) { %>
                                         <%= splitKM.toFixed(2) %>
                                     <% } else { %>
                                         <%= split.split %>
                                     <% } %>
-                                    </td>
+                                </td>
                                 <td><%= new Date(1000 * split.elapsed_time).toISOString().substr(14, 5) %></td>
                                 <td><%= splitPaceMinKM %></td>
                                 <td><%= split.elevation_difference %></td>
@@ -95,10 +105,10 @@ let paceMinMI = new Date(1000 * paceSecMI).toISOString().substr(14, 5)
 
 
             <div id="imperial" class="tab-pane fade">
-                <h3>Imperial Data</h3>
-                <h3>Miles: <%= mi.toFixed(2) %></h3>
-                <h3>Pace (min/mi): <%= paceMinMI %></h3>
-                <h3>Splits</h3>
+                <h3 class="my-3"><span class="font-weight-bold border-bottom">Imperial Data</span></h3>
+                <h5><span class="font-weight-bold">Miles: </span><%= mi.toFixed(2) %></h5>
+                <h5><span class="font-weight-bold">Pace (min/mi): </span><%= paceMinMI %></h5>
+                <h5 class="text-center"><span class="font-weight-bold">Splits</span></h5>
                 <table class="table table-striped table-sm border" >
                     <thead>
                         <th>Mile #</th>
@@ -115,12 +125,13 @@ let paceMinMI = new Date(1000 * paceSecMI).toISOString().substr(14, 5)
                             %>
             
                             <tr>
-                                <td><% if(Math.round(splitMI) != 1) { %>
+                                <td>
+                                    <% if(Math.abs(1-splitMI) > 0.1) { %>
                                         <%= splitMI.toFixed(2) %>
                                     <% } else { %>
                                         <%= split.split %>
                                     <% } %>
-                                    </td>
+                                </td>
                                 <td><%= new Date(1000 * split.elapsed_time).toISOString().substr(14, 5) %></td>
                                 <td><%= splitPaceMinMI %></td>
                                 <td><%= split.elevation_difference %></td>

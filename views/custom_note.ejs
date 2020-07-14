@@ -10,14 +10,15 @@
 <body>
     <%- include ('./partials/sticky_nav.ejs') %>
 
-    <h1>Edit Custom Note</h1>
-    <form action="/activity/<%= activityID %>/note" method="post" id="noteForm">
-        <textarea name="customNote" id="customNote" cols="30" rows="10" form="noteForm" placeholder="Enter a custom note for this activity"><%= user.detailedActivities[activityID].customNote %></textarea>
-        <br>
-        <button type="submit" class="btn btn-success">Save Note</button>
-    </form>
-
-
+    <div class="container rounded border my-2 p-3 text-center" style="width: max-content;">
+        <h1>Edit Custom Note</h1>
+        <form action="/activity/<%= activityID %>/note" method="post" id="noteForm">
+            <textarea name="customNote" id="customNote" cols="50" rows="10" form="noteForm" placeholder="Enter a custom note for this activity"><%= user.detailedActivities[activityID].customNote %></textarea>
+            <br>
+            <button type="submit" class="btn btn-success">Save Note</button>
+        </form>
+    </div>
+    
 
     <%- include ('./partials/bootstrap_scripts.ejs') %>
 </body>
