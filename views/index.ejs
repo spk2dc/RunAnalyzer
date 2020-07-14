@@ -7,12 +7,19 @@
     <title>Run Analyzer</title>
 </head>
 
-<body>
+<body style="padding-top: 0px;">
     <%// - include ('./partials/sticky_nav.ejs') %>
     
-    <div class="container rounded text-center my-4 py-2">
+    <div id="index-header-div" class="container-fluid text-center my-2 py-2">
         <h1>Run Analyzer</h1>
         <h4 style="">(powered by Strava)</h4>
+    </div>
+
+    <div id="index-welcome-div" class="container-fluid text-center my-2 py-2">
+        <h3>Welcome to Run Analyzer!</h3>
+        <br>
+        <h3>This site allows you to sign in using your Strava account and pulls all of your data in to provide you with a more detailed analysis of your runs.</h3>
+        <br>
         <form action="/login" method="get">
             <button type="submit" class="btn btn-success">Login</button>
         </form>
