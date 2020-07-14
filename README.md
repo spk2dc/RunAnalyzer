@@ -5,10 +5,13 @@
 * HTML website
 * CSS styling and animations
 * Node.js
-* Express.js
+* Express.js, Express-Sessions
+* EJS (Embedded JavaScript Templates), EJS Partials
 * MongoDB and Mongoose
+* Heroku Cloud Platform for Live Site
 * jQuery and vanilla JavaScript
 * Axios requests to pull external data from Strava API
+* Dotenv environment variables
 * Document Object Model (DOM) manipulation 
 * Event listeners and handlers
 
