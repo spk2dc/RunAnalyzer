@@ -1,4 +1,4 @@
-# [Run Analyzer](http://runanalyzer.herokuapp.com/) Read Me
+# [Run Analyzer](https://runanalyzer.herokuapp.com/) Read Me
 
 
 ### Technologies Used
@@ -17,7 +17,7 @@
 
 
 ### Instructions
-[Click here for live Run Analyzer website](http://runanalyzer.herokuapp.com/)
+[Click here for live Run Analyzer website](https://runanalyzer.herokuapp.com/)
 
 1. #### Authentication
     * Login to your personal Strava account if you aren't already
