@@ -25,11 +25,9 @@ let paceMinMI = new Date(1000 * paceSecMI).toISOString().substr(14, 5)
 %>
 
 <body>
+    <%- include ('./partials/sticky_nav.ejs') %>
+    
     <h1><%= activity.name %></h1>
-
-    <form action="/user_overview" method="get">
-        <button type="submit" class="btn btn-primary">Back to Overview Page</button>
-    </form>
     
     <br>
     <h3>Date:
@@ -49,8 +47,6 @@ let paceMinMI = new Date(1000 * paceSecMI).toISOString().substr(14, 5)
         <button type="submit" class="btn btn-success">Edit Custom Note</button>
     </form>
 
-    <br>
-    <h3><a href="https://www.strava.com/activities/<%= activity.id %>" class="btn btn-info">View activity in Strava</a></h3>
     <br>
 
     <div class="container rounded my-3 py-3">
@@ -139,6 +135,13 @@ let paceMinMI = new Date(1000 * paceSecMI).toISOString().substr(14, 5)
 
 
     <%- include ('./partials/bootstrap_scripts.ejs') %>
+
+    <script>
+        $(()=>{
+            $('#stravaLink').attr('href', 'https://www.strava.com/activities/<%= activity.id %>')
+            $('#stravaLink').toggleClass('disabled')
+        })
+    </script>
 </body>
 
 </html>

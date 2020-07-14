@@ -1,5 +1,6 @@
 body {
     background-color: #f7f7f9;
+    padding-top: 85px;
 }
 
 body > div {
@@ -18,4 +19,8 @@ button, a.btn {
 
 #user-overview-div {
     width: max-content;
+}
+
+nav {
+    background-color: #fc5200;
 }
